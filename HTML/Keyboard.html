@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>键盘事件示例</title>
+</head>
+<body>
+    <h1>按下任意键，查看控制台输出</h1>
+
+    <script>
+        // 监听键盘按下事件
+        document.addEventListener('keydown', function(event) {
+            console.log('按下的键: ' + event.key); // 打印按下的键
+        });
+
+        // 监听键盘抬起事件
+        document.addEventListener('keyup', function(event) {
+            console.log('释放的键: ' + event.key); // 打印释放的键
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<html>
+  <head>
+    <title>ESP32-CAM Robot</title> 
+    <!-- 页面标题，显示在浏览器标签中 -->
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 视口设置，确保在移动设备上页面的布局正确 -->
+
+    <style>
+      /* 内联CSS样式定义 */
+      body { 
+        font-family: Arial; /* 设置页面的字体为Arial */
+        text-align: center; /* 文本居中 */
+        margin: 0px auto; /* 自动设置左右边距，使页面居中 */
+        padding-top: 30px; /* 页面顶部的间距 */
+      }
+      table { 
+        margin-left: auto; 
+        margin-right: auto; 
+        /* 设置表格左右居中 */
+      }
+      td { 
+        padding: 8px; /* 设置表格单元格的内边距 */
+      }
+      .button {
+        background-color: #2f4468; /* 按钮背景颜色 */
+        border: none; /* 移除按钮边框 */
+        color: white; /* 按钮文字颜色为白色 */
+        padding: 10px 20px; /* 按钮内边距 */
+        text-align: center; /* 文字居中 */
+        text-decoration: none; /* 移除文字的下划线 */
+        display: inline-block; /* 设置为行内块元素 */
+        font-size: 18px; /* 按钮文字的字体大小 */
+        margin: 6px 3px; /* 按钮的外边距 */
+        cursor: pointer; /* 鼠标悬停时显示为指针 */
+        
+        /* 禁用用户选择文字或元素 */
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        
+        -webkit-tap-highlight-color: rgba(0,0,0,0); /* 禁用触摸时的高亮效果 */
+      }
+      img {  
+        width: auto; 
+        max-width: 100%; /* 图片宽度最大为100%，防止图片超出屏幕 */
+        height: auto; /* 保持图片的原始纵横比 */
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>ESP32-CAM Robot</h1> 
+    <!-- 页面主标题 -->
+
+    <img src="" id="photo" 
+    style="transform: rotate(180deg);"
+    /> 
+    <!-- 用于显示ESP32-CAM摄像头的实时视频流，图像源将在页面加载后通过JS设置 -->
+
+    <!-- JavaScript脚本 -->
+    <script>
+      function toggleCheckbox(x) {
+        // 创建一个XMLHttpRequest对象，用于发送GET请求
+        var xhr = new XMLHttpRequest();
+        // 通过GET请求，将指令（x）发送到服务器（例如：/action?go=forward）
+        xhr.open("GET", "/action?go=" + x, true);
+        xhr.send(); // 发送请求
+      }
+
+      // 页面加载时，设置视频流图像的来源URL，显示ESP32-CAM的实时视频流，
+      //将图像调转180度，并将图像的宽度设置为100%
+      // 注意：请将下面的URL改为你的ESP32-CAM的IP地址或域名
+      // 例如：http://192.168.1.100:81/stream
+
+
+      window.onload = document.getElementById("photo").src = window.location.href.slice(0, -1) + ":81/stream";
+
+      if (document.getElementById("photo").src.endsWith(":81/stream")) {
+        document.getElementById("photo").src = "https://rm-static.djicdn.com/documents/68659/837b259bc632c170314770778328074.png";
+      }
+      
+    </script>
+    
+<canvas id="joystick" width="300" height="300" style="border:1px solid #ffffff;"></canvas>
+
+<script>
+  var canvas = document.getElementById('joystick');
+  var ctx = canvas.getContext('2d');
+  var centerX = canvas.width / 2;
+  var centerY = canvas.height / 2;
+  var radius = 100;
+  var isDragging = false;
+
+  function drawJoystick(x, y) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // 清空画布
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2, false); // 绘制外圈
+    ctx.fillStyle = '#ccc';
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(x, y, 20, 0, Math.PI * 2, false); // 绘制摇杆
+    ctx.fillStyle = 'blue';
+    ctx.fill();
+  }
+
+  canvas.addEventListener("mousedown", function(e) {
+    isDragging = true;
+    moveJoystick(e);
+  });
+
+  canvas.addEventListener("mousemove", function(e) {
+    if (isDragging) {
+      moveJoystick(e);
+    }
+  });
+
+  canvas.addEventListener("mouseup", function() {
+    isDragging = false;
+    resetJoystick();
+  });
+
+  canvas.addEventListener("mouseout", function() {
+    isDragging = false;
+    resetJoystick();
+  });
+
+  function moveJoystick(e) {
+    var rect = canvas.getBoundingClientRect();
+    var x = e.clientX - rect.left;
+    var y = e.clientY - rect.top;
+    
+    // 计算摇杆偏移
+    var deltaX = x - centerX;
+    var deltaY = y - centerY;
+    
+    // 限制摇杆的移动范围
+    if (Math.sqrt(deltaX * deltaX + deltaY * deltaY) > radius) {
+      var angle = Math.atan2(deltaY, deltaX);
+      x = centerX + Math.cos(angle) * radius;
+      y = centerY + Math.sin(angle) * radius;
+    }
+    
+    drawJoystick(x, y);
+    
+    // 根据摇杆位置发送指令
+    sendCommand(deltaX, deltaY);
+  }
+
+  function resetJoystick() {
+    drawJoystick(centerX, centerY); // 重置摇杆位置
+    sendCommand(0, 0); // 停止指令
+  }
+
+  function sendCommand(deltaX, deltaY) {
+    var command;
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      command = deltaX > 0 ? 'right' : 'left'; // 判断左右
+    } else {
+      command = deltaY > 0 ? 'backward' : 'forward'; // 判断前后
+    }
+    //如果摇杆在原点
+    if (deltaX == 0 && deltaY == 0) {
+      command = 'stop'; // 停止
+    }
+    // 发送指令
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/action?go=" + command, true);
+    xhr.send();
+  }
+
+  // 初始化绘制
+  drawJoystick(centerX, centerY);
+</script>
+
+  </body>
+</html>

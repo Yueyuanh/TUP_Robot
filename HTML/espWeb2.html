@@ -1,0 +1,83 @@
+<html>
+  <head>
+    <title>TUP_Robot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body {
+        font-family: Arial;
+        text-align: center;
+        margin: 0px auto;
+        padding-top: 30px;
+      }
+      .button {
+        background-color: #2f4468;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 18px;
+        margin: 6px 3px;
+        cursor: pointer;
+        user-select: none;
+      }
+      /* 红点的样式 */
+      #redDot {
+        width: 20px;
+        height: 20px;
+        background-color: black; /* 默认颜色为黑色 */
+        border-radius: 50%; /* 使其为圆形 */
+        margin: 10px auto; /* 上下有间隔，居中 */
+      }
+    </style>
+  </head>
+  <body>
+    <h1>SH-TUP Robot</h1>
+    <div id="redDot"></div> <!-- 嵌入小红点，放在标题下方 -->
+
+    <!-- LED 控制按钮 -->
+    <button class="button" id="ledOnButton">点亮LED</button>
+    <button class="button" id="ledOffButton">熄灭LED</button>
+
+    <script>
+      function changeRedDotColor(isPressed) {
+        const redDot = document.getElementById('redDot');
+        redDot.style.backgroundColor = isPressed ? 'red' : 'black'; // 根据状态改变颜色
+        var led;
+        if (isPressed) {
+          led = 'on';
+        } else {
+          led = 'off';
+        }
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/action?led=" + led, true);
+        xhr.send();
+      }
+
+      // LED按钮事件监听
+      const ledOnButton = document.getElementById("ledOnButton");
+      const ledOffButton = document.getElementById("ledOffButton");
+
+      ledOnButton.addEventListener("mousedown", function() {
+          changeRedDotColor(true); // 按下时红点变红
+      });
+      ledOnButton.addEventListener("mouseup", function() {
+          changeRedDotColor(false); // 松开时红点变黑
+      });
+      ledOnButton.addEventListener("mouseleave", function() {
+          changeRedDotColor(false); // 离开按钮时红点变黑
+      });
+
+      ledOffButton.addEventListener("mousedown", function() {
+          changeRedDotColor(false); // 熄灭LED时红点会保持黑色
+      });
+      ledOffButton.addEventListener("mouseup", function() {
+          changeRedDotColor(false); // 松开时红点变黑
+      });
+      ledOffButton.addEventListener("mouseleave", function() {
+          changeRedDotColor(false); // 离开按钮时红点变黑
+      });
+    </script>
+  </body>
+</html>

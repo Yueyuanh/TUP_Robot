@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鼠标加速度曲线监测</title>
+    <style>
+        body {
+            height: 100vh;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+            cursor: none; /* 隐藏鼠标光标 */
+        }
+        canvas {
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <h1>移动鼠标以监测加速度</h1>
+    <canvas id="canvas" width="600" height="400"></canvas>
+    <p id="acceleration">X轴加速度: 0 像素/秒²<br>Y轴加速度: 0 像素/秒²</p>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const accelerationElement = document.getElementById('acceleration');
+
+        let lastX = 0;
+        let lastY = 0;
+        let lastTime = Date.now();
+        let lastVelocityX = 0;
+        let lastVelocityY = 0;
+        const maxPoints = 100; // 最大点数
+        const accelerationHistory = []; // 存储加速度曲线数据
+
+        document.addEventListener('mousemove', (event) => {
+            const currentX = event.clientX;
+            const currentY = event.clientY;
+            const currentTime = Date.now();
+
+            // 计算时间差
+            const deltaTime = (currentTime - lastTime) / 1000; // 转换为秒
+
+            // 计算速度
+            const velocityX = (currentX - lastX) / deltaTime;
+            const velocityY = (currentY - lastY) / deltaTime;
+
+            // 计算加速度
+            const accelerationX = (velocityX - lastVelocityX) / deltaTime;
+            const accelerationY = (velocityY - lastVelocityY) / deltaTime;
+
+            // 更新加速度显示
+            accelerationElement.innerHTML = 'X轴加速度: ' + accelerationX.toFixed(2) + ' 像素/秒²<br>Y轴加速度: ' + accelerationY.toFixed(2) + ' 像素/秒²';
+
+            // 保存加速度数据
+            accelerationHistory.push({ x: accelerationX, y: accelerationY });
+            if (accelerationHistory.length > maxPoints) {
+                accelerationHistory.shift(); // 保持点数不超过限制
+            }
+
+            // 更新画布
+            drawCurve();
+
+            // 更新上次的位置、速度和时间
+            lastX = currentX;
+            lastY = currentY;
+            lastVelocityX = velocityX;
+            lastVelocityY = velocityY;
+            lastTime = currentTime;
+        });
+
+        function drawCurve() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // 清空画布
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height / 2); // 画线起点
+
+            // 画X轴加速度曲线
+            for (let i = 0; i < accelerationHistory.length; i++) {
+                const point = accelerationHistory[i];
+                const x = (i / maxPoints) * canvas.width;
+                const y = (canvas.height / 2 - point.x)/1000 ; // 倍数调整以增强可视化
+                ctx.lineTo(x, y);
+            }
+
+            ctx.strokeStyle = 'red';
+            ctx.stroke(); // 绘制线条
+            
+            // 绘制Y轴加速度曲线
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height / 2); // 画线起点
+
+            for (let i = 0; i < accelerationHistory.length; i++) {
+                const point = accelerationHistory[i];
+                const x = (i / maxPoints) * canvas.width;
+                const y = (canvas.height / 2 + point.y)/1000 ; // 倍数调整以增强可视化
+                ctx.lineTo(x, y);
+            }
+
+            ctx.strokeStyle = 'blue';
+            ctx.stroke(); // 绘制线条
+        }
+    </script>
+</body>
+</html>

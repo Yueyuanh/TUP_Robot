@@ -1,0 +1,287 @@
+<html>
+  <head>
+    <title>TUP_Robot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body {
+        font-family: Arial;
+        text-align: center;
+        margin: 0px auto;
+        padding-top: 30px;
+      }
+      table {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      td {
+        padding: 8px;
+      }
+      .button {
+        background-color: #2f4468;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 18px;
+        margin: 6px 3px;
+        cursor: pointer;
+        user-select: none;
+      }
+      img {
+        width: auto;
+        max-width: 100%;
+        height: auto;
+      }
+      /* 红点的样式 */
+      #redDot {
+        width: 20px;
+        height: 20px;
+        background-color: black; /* 默认颜色为黑色 */
+        border-radius: 50%; /* 使其为圆形 */
+        margin: 10px auto; /* 上下有间隔，居中 */
+      }
+    </style>
+  </head>
+  <body>
+    <h1>SH-TUP Robot</h1>
+    <div id="redDot"></div> <!-- 嵌入小红点，放在标题下方 -->
+
+    <img src="" id="photo" style="transform: rotate(180deg);"/> 
+
+    <canvas id="joystick" width="300" height="300" style="border:1px solid #ffffff;"></canvas>
+
+    <!-- 新增按钮 -->
+    <button id="pressButton" class="button">LED</button>
+
+    <script>
+      var canvas = document.getElementById('joystick');
+      var ctx = canvas.getContext('2d');
+      var centerX = canvas.width / 2;
+      var centerY = canvas.height / 2;
+      var radius = 100;
+      var isDragging = false;
+
+      function drawJoystick(x, y) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // 清空画布
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2, false); // 绘制外圈
+        ctx.fillStyle = '#ccc';
+        ctx.fill();
+        
+        ctx.beginPath();
+        ctx.arc(x, y, 30, 0, Math.PI * 2, false); // 绘制摇杆
+        ctx.fillStyle = 'blue';
+        ctx.fill();
+      }
+
+      var lastSentTime = 0; // 上一次发送指令的时间
+      var sendInterval = 100; // 发送指令的间隔
+
+      function startDrag(e) {
+        isDragging = true;
+        moveJoystick(e);
+      }
+
+      function endDrag() {
+        isDragging = false;
+        resetJoystick();
+      }
+
+      function moveJoystick(e) {
+        var rect = canvas.getBoundingClientRect();
+        var x, y;
+
+        // 检测鼠标和触摸事件
+        if (e.touches) {
+          x = e.touches[0].clientX - rect.left;
+          y = e.touches[0].clientY - rect.top;
+        } else {
+          x = e.clientX - rect.left;
+          y = e.clientY - rect.top;
+        }
+
+        // 计算摇杆偏移
+        var deltaX = x - centerX;
+        var deltaY = y - centerY;
+        
+        // 限制摇杆的移动范围
+        if (Math.sqrt(deltaX * deltaX + deltaY * deltaY) > radius) {
+          var angle = Math.atan2(deltaY, deltaX);
+          x = centerX + Math.cos(angle) * radius;
+          y = centerY + Math.sin(angle) * radius;
+        }
+        
+        drawJoystick(x, y);
+        
+        // 使用定时器控制指令发送频率
+        var currentTime = Date.now();
+        if (currentTime - lastSentTime > sendInterval) {
+            sendCommand(deltaX, deltaY); // 发送指令
+            lastSentTime = currentTime; // 更新上次发送时间
+        }
+      }
+
+      function resetJoystick() {
+        drawJoystick(centerX, centerY); // 重置摇杆位置
+        sendCommand(0, 0); // 停止指令
+      }
+
+      function sendCommand(deltaX, deltaY) {
+        // 限制每次至少发送一次数据，避免摇杆不动也不发送
+        var command;
+        if (Math.abs(deltaX) > 50 || Math.abs(deltaY) > 50) {
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+              if(deltaX > 50) {
+                command = 'right';
+              } else if(deltaX < -50) {
+                command = 'left';
+              }
+            } else {
+              if(deltaY > 50) {
+                command = 'backward';
+              } else if(deltaY < -50) {
+                command = 'forward';
+              }
+            }
+        } else {
+            command = 'stop'; // 停止
+        }
+        console.log(command);
+        console.log(deltaX, deltaY);
+
+        // 发送指令
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/action?go=" + command, true);
+        xhr.send();
+      }
+      // 事件监听
+      canvas.addEventListener("mousedown", startDrag);
+      canvas.addEventListener("mousemove", function(e) {
+        if (isDragging) {
+          moveJoystick(e);
+        }
+      });
+      canvas.addEventListener("mouseup", endDrag);
+      canvas.addEventListener("mouseout", endDrag);
+
+      // 添加触摸事件
+      canvas.addEventListener("touchstart", function(e) {
+        e.preventDefault(); // 防止页面滚动
+        startDrag(e);
+      });
+      canvas.addEventListener("touchmove", function(e) {
+        if (isDragging) {
+          moveJoystick(e);
+        }
+      });
+      canvas.addEventListener("touchend", endDrag);
+      canvas.addEventListener("touchcancel", endDrag);
+      
+      // 初始化绘制
+      drawJoystick(centerX, centerY);
+
+      // LED按钮事件
+      function changeRedDotColor(isPressed) {
+        const redDot = document.getElementById('redDot');
+        redDot.style.backgroundColor = isPressed ? 'red' : 'black'; // 根据状态改变颜色
+        var led;
+        if (isPressed) {
+          led = 'on';
+        } else {
+          led = 'off';
+        }
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/action?led=" + led, true);
+        xhr.send();
+      }
+
+
+      // 新增按钮事件监听
+      const pressLED = document.getElementById("pressButton");
+      pressLED.addEventListener("mousedown", function() {
+          changeRedDotColor(true); // 按下时红点变红
+      });
+      pressLED.addEventListener("mouseup", function() {
+          changeRedDotColor(false); // 松开时红点变黑
+      });
+      pressLED.addEventListener("mouseleave", function() {
+          changeRedDotColor(false); // 离开按钮时红点变黑
+      });
+
+
+    </script>
+
+    <script>
+
+
+      function toggleCheckbox(x) {
+        var currenTime=Date.now();
+        if (currenTime - lastSentTime > sendInterval) {
+          var xhr = new XMLHttpRequest();
+          xhr.open("GET", "/action?go=" + x, true);
+          xhr.send();
+          lastSentTime = currenTime; // 更新上次发送时间
+        }
+      }
+      function stop(x) {
+          var xhr = new XMLHttpRequest();
+          xhr.open("GET", "/action?go=" + x, true);
+          xhr.send();
+      }
+           
+      function toggleLED(x) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/action?led=" + x, true);
+        xhr.send();
+      }
+      
+      function handleKeyDown(event) {
+        switch(event.key) {
+          case 'w':
+            toggleCheckbox('forward');
+            break;
+          case 'a':
+            toggleCheckbox('left');
+            break;
+          case 's':
+            toggleCheckbox('backward');
+            break;
+          case 'd':
+            toggleCheckbox('right');
+            break;
+          case 'l':
+            toggleLED('on');
+            break;
+        }
+      }
+      
+      function handleKeyUp(event) {
+
+        console.log("stop");
+        switch(event.key)
+        {
+          case 'l':
+            toggleLED('off');
+            break;
+          case 'w':
+          case 'a':
+          case 's':
+          case 'd':
+            stop('stop');
+            stop('stop');
+            stop('stop');
+            stop('stop');
+
+        }
+      }
+      
+      window.onload = function() {
+        document.getElementById("photo").src = window.location.href.slice(0, -1) + ":81/stream";
+        document.addEventListener('keydown', handleKeyDown);
+        document.addEventListener('keyup', handleKeyUp);
+      };
+    </script>
+  </body>
+</html>
