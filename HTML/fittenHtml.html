@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Interface</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            color: rgb(255, 255, 255);
+            font-family: Arial, sans-serif;
+            background-color: #888;
+        }
+        /* 背景图片样式 */
+        #background-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1; /* 设为背景 */
+        }
+        .no-stream {
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30px;
+            color: white;
+            z-index: 1; /* 确保文本在最上面 */
+            display: none; /* 初始隐藏 */
+        }
+        .top-bar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 80px;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        .scoreboard {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 300px;
+            margin: 0 auto;
+        }
+        .team {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .team.red {
+            color: red;
+            border: 2px solid red;
+        }
+        .team.blue {
+            color: #1a81e2; /* 淡蓝色 */
+            border: 2px solid #1a81e2;
+        }
+        .time {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0 20px;
+        }
+        .center-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        .bottom-left {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+        }
+        .bottom-right {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+        }
+        /* 新增血条样式 */
+        .health-bar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: 10px;
+        }
+        .health-bar {
+            width: 200px;
+            height: 20px;
+            background-color: #444;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+        .health-fill {
+            height: 100%;
+            background-color: green;
+            border-radius: 5px;
+        }
+        /* 对话框样式 */
+        .dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        .dialog button {
+            margin: 5px;
+            padding: 10px;
+            color: white;
+            background-color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- 视频流 -->
+    <img id="background-image" src="http://192.168.4.1:81/stream" alt="Streaming Video" style="transform: rotate(180deg);">
+    
+    <div class="no-stream" id="no-stream">No Stream</div>
+
+    <div class="top-bar">
+        <div class="team red">
+            <span>Red Team</span>
+            <span>1500</span>
+        </div>
+
+        <div class="scoreboard">
+            <span class="team red">0</span>
+            <span class="time">6:53</span>
+            <span class="team blue">0</span>
+        </div>
+        <div class="team blue">
+            <span>1500</span>
+            <span>Blue Team</span>
+        </div>
+    </div>
+    
+    <div class="center-display">
+        <div class="crosshair">+</div>
+    </div>
+    
+    <div class="bottom-left">
+        <div class="status">
+            <p>系统信息</p>
+            <p>当前状态...</p>
+        </div>
+        <!-- 血量条 -->
+        <div class="health-bar-container">
+            <p>健康状态</p>
+            <div class="health-bar">
+                <div class="health-fill" id="health-fill" style="width: 80%;"></div>
+            </div>
+            <p id="health-text">健康 200 / 250</p>
+        </div>
+    </div>
+    
+    <div class="bottom-right">
+        <div class="map">
+            <p>地图</p>
+        </div>
+    </div>
+
+    <!-- 对话框 -->
+    <div class="dialog" id="dialog">
+        <h3>选择队伍</h3>
+        <button id="red-button">红方</button>
+        <button id="blue-button">蓝方</button>
+    </div>
+
+    <script>
+        let myHealth = 200; // 初始化自己的血量
+        const healthFill = document.getElementById("health-fill");
+        const healthText = document.getElementById("health-text");
+        const dialog = document.getElementById("dialog");
+        const noStreamText = document.getElementById("no-stream");
+
+        // 设置背景图片源
+        document.getElementById("background-image").src = "http://192.168.4.1:81/stream";
+
+        // 监听视频加载错误
+        const backgroundImage = document.getElementById("background-image");
+        backgroundImage.onerror = function() {
+            // 背景视频流加载失败
+            backgroundImage.style.display = "none"; // 隐藏视频
+            noStreamText.style.display = "block"; // 显示"No Stream"
+            document.body.style.backgroundColor = "#888"; // 设置背景为灰色
+        };
+
+        // 监听键盘事件
+        document.addEventListener("keydown", function(event) {
+            if (event.key === "p" || event.key === "P") {
+                dialog.style.display = "block"; // 显示对话框
+            }
+        });
+
+        // 选择红方
+        document.getElementById("red-button").onclick = function() {
+            healthFill.style.backgroundColor = "red"; // 设置颜色为红
+            healthText.textContent = `健康 ${myHealth} / 250`;
+            dialog.style.display = "none"; // 关闭对话框
+        };
+
+        // 选择蓝方
+        document.getElementById("blue-button").onclick = function() {
+            healthFill.style.backgroundColor = "#1a81e2"; // 设置颜色为淡蓝色
+            healthText.textContent = `健康 ${myHealth} / 250`;
+            dialog.style.display = "none"; // 关闭对话框
+        };
+    </script>
+</body>
+</html>

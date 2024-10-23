@@ -451,29 +451,29 @@ static esp_err_t cmd_handler(httpd_req_t *req)
     {
       if (httpd_query_key_value(buf, "go", variable, sizeof(variable)) == ESP_OK)
       {
+        //。。。。
+      } else if (httpd_query_key_value(buf, "led", variable, sizeof(variable)) == ESP_OK)
+      {
+          // 处理LED命令
+          const int ledPin = 4; // LED引脚
+          pinMode(ledPin,OUTPUT);// 规定这个时输出引脚
+          if (!strcmp(variable, "on")) //比较是否
+          {
+              digitalWrite(ledPin, HIGH);
+              Serial.println("LED turned ON");//在网页中输出
+          }
+          else if (!strcmp(variable, "off"))
+          {
+              digitalWrite(ledPin, LOW);
+              Serial.println("LED turned OFF");
+          }
+          else
+          {
+              free(buf);
+              httpd_resp_send_404(req);
+              return ESP_FAIL;
+          }
       }
-       else if (httpd_query_key_value(buf, "led", variable, sizeof(variable)) == ESP_OK)
-            {
-                // 处理LED命令
-                const int ledPin = 4; // LED引脚
-                pinMode(ledPin,OUTPUT);
-                if (!strcmp(variable, "on"))
-                {
-                    digitalWrite(ledPin, HIGH);
-                    Serial.println("LED turned ON");
-                }
-                else if (!strcmp(variable, "off"))
-                {
-                    digitalWrite(ledPin, LOW);
-                    Serial.println("LED turned OFF");
-                }
-                else
-                {
-                    free(buf);
-                    httpd_resp_send_404(req);
-                    return ESP_FAIL;
-                }
-            }
       else
       {
         free(buf);
@@ -559,13 +559,13 @@ void startCameraServer()
   httpd_uri_t index_uri = {
       .uri = "/",
       .method = HTTP_GET,
-      .handler = index_handler,
+      .handler = index_handler, //index_hadnler函数  首页的函数 句柄
       .user_ctx = NULL};
 
   httpd_uri_t cmd_uri = {
       .uri = "/action",
       .method = HTTP_GET,
-      .handler = cmd_handler,
+      .handler = cmd_handler, //cmd_handler  首页的函数 句柄
       .user_ctx = NULL};
   httpd_uri_t stream_uri = {
       .uri = "/stream",

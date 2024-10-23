@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Interface</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #555;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .top-bar {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .health-bar {
+            width: 200px;
+            height: 20px;
+        }
+        .red-health-bar {
+            background-color: red;
+        }
+        .blue-health-bar {
+            background-color: blue;
+        }
+        .score {
+            font-size: 18px;
+            margin: 0 10px;
+        }
+        .crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50px;
+            height: 50px;
+            background-color: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.5); /* 降低透明度 */
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .map {
+            width: 150px;
+            height: 150px;
+            background-color: #333;
+        }
+        .health-bar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 居中对齐 */
+        }
+        .health-value {
+            margin-bottom: 5px; /* 血量值和血条之间的间距 */
+            font-size: 14px; /* 字体大小 */
+            color: white; /* 字体颜色 */
+        }
+        /* 新增自己的血量状态样式 */
+        .my-health-status {
+            position: absolute;
+            bottom: 20px; /* 距离底部20px */
+            left: 20px; /* 距离左侧20px */
+            font-size: 18px; /* 字体大小 */
+            color: white; /* 字体颜色 */
+            background-color: rgba(0, 0, 0, 0.7); /* 背景颜色 */
+            padding: 5px; /* 内边距 */
+            border-radius: 5px; /* 边角圆滑 */
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <!-- 红方 -->
+        <div class="health-bar-container">
+            <div id="health-value-red" class="health-value">血量: 100</div>
+            <div id="health-bar-red" class="health-bar red-health-bar"></div>
+        </div>
+        
+        <!-- 分隔线 -->
+        <div class="score"> 0</div>
+        <div>Round: 1</div>
+        <div class="score"> 0</div>
+
+        <!-- 蓝方 -->
+        <div class="health-bar-container">
+            <div id="health-value-blue" class="health-value">血量: 100</div>
+            <div id="health-bar-blue" class="health-bar blue-health-bar"></div>
+        </div>
+    </div>
+    <div class="crosshair"></div>
+
+    <!-- 添加自己的血量状态 -->
+    <div class="my-health-status" id="my-health-status">自己的血量: 100</div>
+
+    <script>
+        let healthRed = 100;
+        let healthBlue = 100;
+        let myHealth = 100; // 初始化自己的血量
+
+        function updateHealth(healthValue, healthBarId, healthValueId) {
+            const healthBar = document.getElementById(healthBarId);
+            const healthValueDisplay = document.getElementById(healthValueId);
+            
+            // 更新血条宽度（例如: 最大血量 200）
+            healthBar.style.width = healthValue * 2 + 'px';  // 假设最大值为 200
+            healthValueDisplay.textContent = '血量: ' + healthValue;
+
+            // 更新自己的血量状态
+            document.getElementById('my-health-status').textContent = '自己的血量: ' + myHealth;
+        }
+
+        // 更新血量
+        updateHealth(healthRed, 'health-bar-red', 'health-value-red');
+        updateHealth(healthBlue, 'health-bar-blue', 'health-value-blue');
+
+        // 改变血量的示例
+        function changeHealth(player, amount) {
+            if (player === 'red') {
+                healthRed += amount;
+                if (healthRed < 0) healthRed = 0;
+                updateHealth(healthRed, 'health-bar-red', 'health-value-red');
+            } else if (player === 'blue') {
+                healthBlue += amount;
+                if (healthBlue < 0) healthBlue = 0;
+                updateHealth(healthBlue, 'health-bar-blue', 'health-value-blue');
+            } else if (player === 'my') {
+                myHealth += amount; // 改变自己的血量
+                if (myHealth < 0) myHealth = 0;
+                updateHealth(myHealth, 'health-bar-red', 'health-value-red'); // 以红方的方式更新
+            }
+        }
+
+        // 可以调用 changeHealth('red', -10) 来减少红方血量
+        // 可以调用 changeHealth('blue', -10) 来减少蓝方血量
+        // 可以调用 changeHealth('my', -10) 来减少自己的血量
+    </script>
+</body>
+</html>
