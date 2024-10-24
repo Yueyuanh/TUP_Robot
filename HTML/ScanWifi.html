@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wi-Fi Scanner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #eee;
+        }
+        .result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Wi-Fi Signal Scanner</h1>
+<button id="scan-btn">Scan Wi-Fi Signals</button>
+
+<div class="result" id="result"></div>
+
+<script>
+    document.getElementById("scan-btn").addEventListener("click", function() {
+        // 模拟扫描 Wi-Fi 信号 (在实际中应替换为真实数据)
+        const wifiSignals = [
+            "MyWiFi-1234",
+            "PublicNetwork-5678",
+            "HomeWiFi-1AB2",
+            "AnotherNetwork-9XYZ"
+        ];
+
+        const regexPattern = /.*MyWiFi.*/i; // 检索匹配的正则表达式
+        const matchedSignals = wifiSignals.filter(signal => regexPattern.test(signal));
+        
+        displayResults(matchedSignals);
+    });
+
+    function displayResults(signals) {
+        const resultDiv = document.getElementById("result");
+        resultDiv.innerHTML = ""; // 清空之前的结果
+
+        if (signals.length > 0) {
+            let html = "<table><tr><th>Matched Wi-Fi Signals</th></tr>";
+            signals.forEach(signal => {
+                html += `<tr><td>${signal}</td></tr>`;
+            });
+            html += "</table>";
+            resultDiv.innerHTML = html;
+        } else {
+            resultDiv.innerHTML = "<p>No matching Wi-Fi signals found.</p>";
+        }
+    }
+</script>
+
+</body>
+</html>
