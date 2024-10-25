@@ -1,27 +1,55 @@
 // 处理欢迎界面的显示逻辑
 
-document.getElementById("welcome-screen").style.display = "none"; // 隐藏欢迎界面
-document.getElementById("main-screen").style.display = "block"; // 显示主界面
+// document.getElementById("welcome-screen").style.display = "none"; // 隐藏欢迎界面
+// document.getElementById("main-screen").style.display = "block"; // 显示主界面
 
 const welcome_bgm = document.getElementById("welcome-audio");
-welcome_bgm.play(); // 播放欢迎音乐
+const ready_bgm = document.getElementById("ready-audio");
+const start_bgm = document.getElementById("start-audio");
+
+
+// 点击
+document.addEventListener('click', () => {
+    const welcomeScreen = document.getElementById("welcome-screen");
+    if (welcomeScreen.style.display !== "none") { // 检查欢迎界面是否可见
+        welcome_bgm.play(); // 只有在欢迎界面时才播放音乐
+    }});
+
 
 document.getElementById("start-game").onclick = function() {
-    welcome_bgm.pause(); // 播放欢迎音乐
+    // 检查音频是否正在播放
+    if (!welcome_bgm.paused) {
+        welcome_bgm.pause(); // 如果正在播放，则暂停
+    }
     document.getElementById("welcome-screen").style.display = "none"; // 隐藏欢迎界面
     document.getElementById("main-screen").style.display = "block"; // 显示主界面
-};
+    ready_bgm.play(); // 只有在欢迎界面时才播放音乐
 
+    // if(document.getElementById("main-screen").style.display!='none'){
+    //     ready_bgm.play(); // 只有在欢迎界面时才播放音乐
+    // }
+
+};
 
 
 
 // 游戏相关逻辑
 let myHealth = 250; // 初始化自己的血量
 
+//无信号
+const noStreamText = document.getElementById("no-stream");
+//血条
 const healthFill = document.getElementById("self-health-fill");
 const healthText = document.getElementById("health-text");
+//对话框
 const dialog = document.getElementById("dialog");
-const noStreamText = document.getElementById("no-stream");
+//设置对话框
+const settingsDialog = document.getElementById('settings-dialog');
+const overlay = document.getElementById('overlay');
+const musicToggle = document.getElementById('music-toggle');
+//倒计时
+let countdownElement = document.getElementById("countdown");
+
 let countdown; // 倒计时变量
 let totalTime; // 保存总时间（以秒为单位）
 const timeDisplay = document.querySelector(".time"); // 获取时间显示的元素
@@ -88,6 +116,17 @@ document.addEventListener("keydown", function(event) {
             dialog.style.display = "none"; // 关闭对话框
         } else {
             dialog.style.display = "block"; // 显示对话框
+            settingsDialog.style.display = "none"; // 关闭对话框
+        }
+    }
+    else if (event.key === "o" || event.key === "O") {
+        if (settingsDialog.style.display === "block") {
+            settingsDialog.style.display = "none"; // 关闭对话框
+
+        } else {
+            settingsDialog.style.display = "block"; // 显示对话框
+            dialog.style.display = "none"; // 关闭对话框
+
         }
     }
 });
@@ -110,39 +149,99 @@ document.getElementById("blue-button").onclick = function() {
 document.getElementById("toggle-button").onclick = function() {
     if (!isGameStarted) {
         totalTime = 7 * 60; // 每次开始时重置为7分钟
+
         dialog.style.display = "none"; // 关闭对话框
+        closeCentercanvas(true); // 关闭中心画布
+        countdownElement.style.display = "block"; // 显示倒计时
+
+
+        startCountdown5(5); // 从 5 开始倒计时
         startCountdown(); // 启动倒计时
+
         this.textContent = "结束比赛"; // 更改按钮文本
         isGameStarted = true; // 更新比赛状态为已开始
+
         updateHealthBar('red', 250);
         updateHealthBar('blue', 250);
         updateHealthBar('self', 250);
+
+        ready_bgm.pause(); // 暂停准备音乐
+        ready_bgm.currentTime = 0; // 重置开始音乐播放位置
+        start_bgm.play(); // 播放开始音乐
 
     } else {
         clearInterval(countdown); // 停止倒计时
         alert("比赛已经结束！"); // 可选择添加比赛结束的逻辑
         this.textContent = "开始比赛"; // 恢复按钮文本
+        dialog.style.display = "none"; // 关闭对话框
         isGameStarted = false; // 更新比赛状态为未开始
+
+        ready_bgm.play(); // 播放准备音乐
+        start_bgm.pause(); // 暂停开始音乐
+        start_bgm.currentTime = 0; // 重置开始音乐播放位置
     }
 };
 
 function startCountdown() {
-    countdown = setInterval(function() {
-        if (totalTime <= 0) {
-            clearInterval(countdown); // 停止倒计时
-            alert("比赛结束！"); // 比赛结束时的提示
-            document.getElementById("toggle-button").textContent = "开始比赛"; // 恢复按钮文本
-            isGameStarted = false; // 更新比赛状态为未开始
-            return;
-        }
+    // 先清除可能存在的旧倒计时
+    clearInterval(countdown);
 
-        let minutes = Math.floor(totalTime / 60);
-        let seconds = totalTime % 60;
-        timeDisplay.textContent = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`; // 格式化时间显示
-        totalTime--; // 每秒减少1
-    }, 1000); // 每1000ms（1秒）调用一次
+    // 设置 5 秒的延时，再执行启动倒计时的逻辑
+    setTimeout(function() {
+        countdown = setInterval(function() {
+            if (totalTime <= 0) {
+                clearInterval(countdown); // 停止倒计时
+                alert("比赛结束！"); // 比赛结束时的提示
+                document.getElementById("toggle-button").textContent = "开始比赛"; // 恢复按钮文本
+                isGameStarted = false; // 更新比赛状态为未开始
+                return;
+            }
+
+            let minutes = Math.floor(totalTime / 60);
+            let seconds = totalTime % 60;
+            timeDisplay.textContent = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`; // 格式化时间显示
+            totalTime--; // 每秒减少1
+        }, 1000); // 每1000ms（1秒）调用一次
+    }, 5000); // 延迟5000毫秒（5秒）后开始倒计时
 }
 
+
+function startCountdown5(seconds) {
+    let timeLeft = seconds;
+    countdownElement.textContent = timeLeft; // 更新倒计时时间
+    const countdownInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft >= 1) {
+            countdownElement.textContent = timeLeft; // 更新倒计时显示
+        } else {
+            clearInterval(countdownInterval); // 清除定时器
+            countdownElement.textContent = "GO!"; // 倒计时结束显示 "GO!"
+            countdownElement.style.display = "none"; // 关闭倒计时
+            //打开中心画布
+            closeCentercanvas(false);
+        }
+    }, 1000); // 每秒更新一次
+}
+
+  // 监听背景音乐开关
+  musicToggle.addEventListener('change', () => {
+    if (musicToggle.checked) {
+        if (isGameStarted) {
+            start_bgm.play(); // 开启音乐
+        }
+        else {
+            ready_bgm.play(); // 开启音乐
+        }
+        // start_bgm.play(); // 开启音乐
+    } else {
+        if (isGameStarted) {
+            start_bgm.pause(); // 
+        }
+        else {
+            ready_bgm.pause(); // 
+        } 
+    }
+});
 
 
 
@@ -174,6 +273,8 @@ document.addEventListener('keyup', () => {
 // 热量环动画
 let currentRatio = 0; // 当前比例，初始为 0.1
 const canvas = document.getElementById('circle');
+const crosshair = document.getElementById('crosshair');
+
 if (!canvas.getContext('2d')) {
     console.log('浏览器不支持Canvas');
 }
@@ -206,7 +307,20 @@ ctx_outer.beginPath();  // 路径开始
 ctx_outer.arc(100, 100, 70,0, (Math.PI * 2), true);  // 绘制路径
 ctx_outer.stroke();
 
+function closeCentercanvas(bool) {
+    if(bool == true){
+        canvas.style.display = "none"; 
+        canvas_outer.style.display = "none";  
+        crosshair.style.display = 'none';       
+    }
+    else{
+        canvas.style.display = "block"; 
+        canvas_outer.style.display = "block"; 
+        crosshair.style.display = 'block';       
+  
+    }   
 
+}
 
 document.addEventListener('mousedown', (event) => {
     let button;

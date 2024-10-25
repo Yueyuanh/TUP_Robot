@@ -9,13 +9,22 @@
 
     <body>
         <!-- 欢迎界面 -->
+                     
+        <audio id="welcome-audio" loop>
+            <source src="./audio/Restart.mp3" type="audio/mpeg">
+        </audio>
+
+        <audio id="ready-audio" loop>
+            <source src="./audio/Ready.mp3" type="audio/mpeg">
+        </audio>
+        
+        <audio id="start-audio" loop>
+            <source src="./audio/Start.mp3" type="audio/mpeg">
+        </audio>
+
         <div class="welcome-screen" id="welcome-screen">
             <h1>欢迎来到 TUP 机甲大师</h1>
             <button id="start-game">开始游戏</button>
-            <audio id="welcome-audio" loop>
-                <source src="./audio/Adrenaline.mp3" type="audio/mpeg">
-            </audio>
-   
         </div>
 
 
@@ -59,7 +68,7 @@
             <!-- 瞄准线 -->
             <div class="center-display">
 
-                <div class="crosshair">+</div>
+                <div class="crosshair" id="crosshair">+</div>
 
                 <div class="cross-heat">
                     <canvas id="circle" width="200px" height="200px"></canvas>
@@ -68,7 +77,9 @@
                 <div class="cross-circle">
                     <canvas id="circle-outer" width="200px" height="200px"></canvas>
                 </div>
-                
+
+                <div id="countdown">5</div>
+
 
             </div>
 
@@ -114,6 +125,17 @@
                 <input type="text" id="team-name" placeholder="请输入队名">
                 <button id="confirm-button">确认</button>
                 <button id="toggle-button" style="background-color: rgb(225, 97, 97); color: white;">开始比赛</button>
+            </div>
+
+            <div id="overlay"></div>
+            
+            <!-- 设置对话框   -->
+            <div id="settings-dialog">
+                <h2>设置</h2>
+                <label>
+                    <input type="checkbox" id="music-toggle" checked />
+                    背景音乐开关
+                </label>
             </div>
         </div>
 

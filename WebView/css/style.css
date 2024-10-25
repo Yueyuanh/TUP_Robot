@@ -305,7 +305,7 @@ body {
     /* display: none; 初始隐藏 */
 }
 
-/* 对话框样式 */
+/* 用户对话框样式 */
 .dialog {
     display: none; /* 初始隐藏 */
     position: fixed;
@@ -354,3 +354,42 @@ body {
     background-color: #f2f2f2; /* 输入框背景为浅灰色 */
     color: #000000; /* 输入框文字颜色为黑色 */
 }
+
+/* 设置对话框 */
+#settings-dialog {
+    display: none; /* 初始隐藏对话框 */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 8px; /* 边角圆润 */
+    background-color: rgba(30, 30, 30, 0.9); /* 深色背景和透明度 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* 阴影效果 */
+    padding: 20px;
+    z-index: 1000;
+}
+
+#overlay {
+    display: none; /* 初始隐藏遮罩 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* 半透明的黑色 */
+    z-index: 999; /* 使遮罩在对话框下 */
+}
+
+input[type="checkbox"] {
+    margin-right: 5px; /* 复选框右边距 */
+}
+
+/* 倒计时样式 */
+#countdown {
+    display: none; /* 初始隐藏遮罩 */
+    font-size: 200px; /* 设置字体大小为48像素 */
+    color: white; /* 字体颜色为白色 */
+    text-align: center; /* 文本居中 */
+    z-index: 4; /* 设置 z-index，使其在底层 */
+}
+
