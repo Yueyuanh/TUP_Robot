@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyWebview Flask Example</title>
+</head>
+<body>
+    <h1>与 Flask 通信示例</h1>
+    <input type="text" id="message" placeholder="输入消息">
+    <button id="send-button">发送消息</button>
+    
+    <div id="response"></div> <!-- 用于显示服务器响应 -->
+    
+    <script>
+        document.getElementById("send-button").onclick = function() {
+            const message = document.getElementById("message").value;
+
+            // 通过 Fetch API 发送 POST 请求到 Flask 服务
+            fetch('http://127.0.0.1:5000/api/message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: message }) // 将消息放入 JSON 数据中
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data); // 在浏览器控制台中输出响应
+                document.getElementById("response").innerText = `服务器响应: ${data.message}`;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        };
+    </script>
+</body>
+</html>

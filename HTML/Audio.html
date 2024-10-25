@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>欢迎页面</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #282c34;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .welcome-screen {
+            text-align: center;
+        }
+
+        .welcome-screen button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #1a81e2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="welcome-screen">
+        <h1>欢迎来到游戏</h1>
+        <button id="start-game">开始游戏</button>
+        
+        <!-- 背景音乐 -->
+        <audio id="bgm" loop>
+            <source src="Adrenaline.mp3" type="audio/mpeg"> <!-- 替换为你的音频文件路径 -->
+        </audio>
+    </div>
+
+    <script>
+        const bgm = document.getElementById('bgm');
+        let isPlaying = false; // 监控音乐是否正在播放
+
+        // 监测鼠标移动事件
+        document.addEventListener('mousemove', function() {
+            if (!isPlaying) { // 如果音乐还未播放
+                bgm.play(); // 开始播放音乐
+                isPlaying = true; // 更新状态为正在播放
+            }
+        });
+
+        // 处理开始游戏按钮逻辑
+        document.getElementById("start-game").onclick = function() {
+            if (isPlaying) {
+                bgm.pause(); // 在开始游戏时暂停音乐
+                bgm.currentTime = 0; // 可选：重置音乐播放时间
+            }
+            // 在这里添加代码以切换到主游戏界面
+            alert("游戏开始！"); // 示例提示
+        };
+    </script>
+
+</body>
+</html>
