@@ -16,7 +16,8 @@ document.getElementById("start-game").onclick = function() {
 
 
 // 游戏相关逻辑
-let myHealth = 20; // 初始化自己的血量
+let myHealth = 250; // 初始化自己的血量
+
 const healthFill = document.getElementById("self-health-fill");
 const healthText = document.getElementById("health-text");
 const dialog = document.getElementById("dialog");
@@ -26,19 +27,6 @@ let totalTime; // 保存总时间（以秒为单位）
 const timeDisplay = document.querySelector(".time"); // 获取时间显示的元素
 let isGameStarted = false; // 标记比赛是否开始
 
-// 页面加载时检查 localStorage
-window.onload = function() {
-    const savedTeam = localStorage.getItem("selectedTeam"); // 从 localStorage 获取选择的队伍
-    if (savedTeam) {
-        if (savedTeam === "red") {
-            healthFill.style.backgroundColor = "red"; // 设置颜色为红
-            healthText.textContent = `健康 ${myHealth} / 250`;
-        } else if (savedTeam === "blue") {
-            healthFill.style.backgroundColor = "#1a81e2"; // 设置颜色为淡蓝色
-            healthText.textContent = `健康 ${myHealth} / 250`;
-        }
-    }
-};
 
 // 设置背景图片源
 document.getElementById("background-image").src = "http://192.168.4.1:81/stream";
@@ -51,6 +39,47 @@ backgroundImage.onerror = function() {
     noStreamText.style.display = "block"; // 显示"No Stream"
     document.body.style.backgroundColor = "#888"; // 设置背景为灰色
 };
+
+
+// 血量条更新函数
+
+function updateHealthBar(who, healthValue) {
+    let fillElement;
+    let healthTextElement;
+
+    // 根据输入的 'who' 参数选择相应的元素
+    if (who === 'red') {
+        fillElement = document.getElementById("health-fill-red");
+        healthTextElement = document.getElementById("health-text-red");
+    } else if (who === 'blue') {
+        fillElement = document.getElementById("health-fill-blue");
+        healthTextElement = document.getElementById("health-text-blue");
+    } else if (who === 'self') {
+        fillElement = document.getElementById("self-health-fill");
+        healthTextElement = document.getElementById("health-text-self");
+    } else {
+        alert("未知的血条类型！");
+        return; // 退出函数
+    }
+
+    // 更新血条的宽度和文本
+    if (healthValue >= 0 && healthValue <= 250) {
+        if(who=='red'){
+            fillElement.style.width = 250-healthValue + '%'; // 更新宽度
+            healthTextElement.textContent = `${healthValue} / 250`; // 更新文本     
+        }
+        else if(who=='blue'){
+            fillElement.style.width = healthValue/250*100 + '%'; // 更新宽度
+            healthTextElement.textContent = `${healthValue} / 250`; // 更新文本     
+        }
+        else if(who=='self'){
+            fillElement.style.width = healthValue/250*100 + '%'; // 更新宽度
+            healthTextElement.textContent = `${healthValue} / 250`; // 更新文本     
+        }
+
+    }
+}
+
 
 // 监听键盘事件
 document.addEventListener("keydown", function(event) {
@@ -68,7 +97,6 @@ document.getElementById("red-button").onclick = function() {
     healthFill.style.backgroundColor = "red"; // 设置颜色为红
     healthText.textContent = `健康 ${myHealth} / 250`;
     dialog.style.display = "none"; // 关闭对话框
-    localStorage.setItem("selectedTeam", "red"); // 保存选择的队伍
 };
 
 // 选择蓝方
@@ -76,7 +104,6 @@ document.getElementById("blue-button").onclick = function() {
     healthFill.style.backgroundColor = "#1a81e2"; // 设置颜色为淡蓝色
     healthText.textContent = `健康 ${myHealth} / 250`;
     dialog.style.display = "none"; // 关闭对话框
-    localStorage.setItem("selectedTeam", "blue"); // 保存选择的队伍
 };
 
 // 切换比赛状态
@@ -87,6 +114,10 @@ document.getElementById("toggle-button").onclick = function() {
         startCountdown(); // 启动倒计时
         this.textContent = "结束比赛"; // 更改按钮文本
         isGameStarted = true; // 更新比赛状态为已开始
+        updateHealthBar('red', 250);
+        updateHealthBar('blue', 250);
+        updateHealthBar('self', 250);
+
     } else {
         clearInterval(countdown); // 停止倒计时
         alert("比赛已经结束！"); // 可选择添加比赛结束的逻辑
@@ -113,6 +144,9 @@ function startCountdown() {
 }
 
 
+
+
+
 // 键鼠监听
 const tooltip     = document.getElementById('tooltip');
 const tooltip_key = document.getElementById('tooltip-key');
@@ -134,11 +168,60 @@ document.addEventListener('keyup', () => {
     // tooltip_key.style.display = 'none'; // 放开按键时隐藏提示框
 });
 
+
+
+
+// 热量环动画
+let currentRatio = 0; // 当前比例，初始为 0.1
+const canvas = document.getElementById('circle');
+if (!canvas.getContext('2d')) {
+    console.log('浏览器不支持Canvas');
+}
+const ctx = canvas.getContext('2d');
+
+function drawCircle(value) {
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // 清空画布
+    ctx.strokeStyle = '#fb2828';  // 边界颜色
+    ctx.lineWidth = 10;  // 边界宽度
+    ctx.beginPath();  // 路径开始
+    if(value==0){
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // 清空画布
+    }
+    else{
+        ctx.arc(100, 100, 70,0, (Math.PI * 2)*(1-value), true);  // 绘制路径
+        ctx.stroke();
+    }
+        
+}
+
+const canvas_outer = document.getElementById('circle-outer');
+if (!canvas_outer.getContext('2d')) {
+    console.log('浏览器不支持Canvas');
+}
+const ctx_outer = canvas_outer.getContext('2d');
+ctx_outer.strokeStyle = 'rgba(255, 255, 255, 0.5)';  // 边界颜色
+ctx_outer.lineWidth = 10;  // 边界宽度
+ctx_outer.beginPath();  // 路径开始
+ctx_outer.arc(100, 100, 70,0, (Math.PI * 2), true);  // 绘制路径
+ctx_outer.stroke();
+
+
+
 document.addEventListener('mousedown', (event) => {
     let button;
     switch (event.button) {
         case 0:
             button = '左键';
+
+            currentRatio += 0.1; // 每次点击增加 0.1
+            if (currentRatio > 1) { // 超过 1 后重置
+                currentRatio = 0;
+            }
+            drawCircle(currentRatio); // 绘制当前比例的圆
+            // 终端输出当前比例
+            console.log(currentRatio);
+            // tooltip.style.display = 'none'; // 放开鼠标时隐藏提示框
             break;
         case 1:
             button = '中键';
@@ -154,8 +237,13 @@ document.addEventListener('mousedown', (event) => {
     tooltip.style.display = 'block';
 });
 
+// 鼠标点击事件
 document.addEventListener('mouseup', () => {
     tooltip.textContent = `鼠标按键: 无`;
     tooltip.style.display = 'block';
-    // tooltip.style.display = 'none'; // 放开鼠标时隐藏提示框
+
+
 });
+
+drawCircle(0); // 初始化
+

@@ -34,21 +34,21 @@
                 <div class="health-bar-container-red">
                     <div class="health-bar-red">
                         <div class="health-fill-red" id="health-fill-red"
-                            style="width: 80%;"></div>
+                            style="width: 20%;"></div>
                         <span class="health-text-red" id="health-text-red"> 200 / 250</span>
                     </div>
                 </div>
 
                 <div class="scoreboard">
                     <span class="team red">0</span>
-                    <span class="time">6:53</span>
+                    <span class="time">7:00</span>
                     <span class="team blue">0</span>
                 </div>
                 <div class="health-bar-container-blue">
                     <div class="health-bar-blue">
                         <div class="health-fill-blue" id="health-fill-blue"
-                            style="width: 50%;"></div>
-                        <span class="health-text-blue">100 / 250</span>
+                            style="width: 80%;"></div>
+                        <span class="health-text-blue" id="health-text-blue">100 / 250</span>
                     </div>
                 </div>
                 <div class="team blue">
@@ -58,8 +58,21 @@
 
             <!-- 瞄准线 -->
             <div class="center-display">
+
                 <div class="crosshair">+</div>
+
+                <div class="cross-heat">
+                    <canvas id="circle" width="200px" height="200px"></canvas>
+                </div>
+
+                <div class="cross-circle">
+                    <canvas id="circle-outer" width="200px" height="200px"></canvas>
+                </div>
+                
+
             </div>
+
+    
 
             <!-- 左侧信息栏 -->
             <div class="bottom-left">
@@ -72,7 +85,7 @@
                     <div class="self-health-bar">
                         <div class="self-health-fill" id="self-health-fill"
                             style="width: 80%;">
-                            <span class="health-text-self">200 / 250 </span>
+                            <span class="health-text-self" id="health-text-self">200 / 250 </span>
                         </div>
                     </div>
                 </div>

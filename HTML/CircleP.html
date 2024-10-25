@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动态圆环</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="heat-circle" id="heat-circle"></div>
+    <input type="number" id="ratio-input" min="0" max="1" step="0.01" value="0.5">
+    <button onclick="updateCircle()">更新圆环</button>
+
+    <script>
+        function updateCircle() {
+            const ratio = document.getElementById('ratio-input').value; // 获取输入比例
+            const angle = ratio * 360; // 计算对应的角度
+
+            // 根据比例调整 polygon 的顶点位置
+            const x = Math.cos((angle - 90) * (Math.PI / 180)) * 100 + 100; // 计算 X 坐标
+            const y = Math.sin((angle - 90) * (Math.PI / 180)) * 100 + 100; // 计算 Y 坐标
+
+            const polygon = `100% 100%, 100% 0, ${x}px ${y}px`; // 更新 polygon
+            document.getElementById('heat-circle').style.clipPath = `polygon(${polygon})`; // 更新圆环的裁剪路径
+        }
+    </script>
+</body>
+</html>

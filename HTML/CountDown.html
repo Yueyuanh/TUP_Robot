@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>倒计时示例</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* 高度占满视口 */
+            background-color: black; /* 背景颜色 */
+            color: white; /* 字体颜色 */
+            font-size: 100px; /* 字体大小 */
+            font-family: Arial, sans-serif; /* 字体样式 */
+        }
+        #countdown {
+            display: none; /* 初始隐藏 */
+        }
+    </style>
+</head>
+<body>
+    <div id="countdown">5</div>
+    <button id="start-button">开始倒计时</button>
+
+    <script>
+        let countdownElement = document.getElementById("countdown");
+        let startButton = document.getElementById("start-button");
+
+        startButton.onclick = function() {
+            startButton.style.display = "none"; // 隐藏开始按钮
+            countdownElement.style.display = "block"; // 显示倒计时
+            startCountdown(5); // 从 5 开始倒计时
+        };
+
+        function startCountdown(seconds) {
+            let timeLeft = seconds;
+            countdownElement.textContent = timeLeft; // 更新倒计时时间
+            const countdownInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft >= 1) {
+                    countdownElement.textContent = timeLeft; // 更新倒计时显示
+                } else {
+                    clearInterval(countdownInterval); // 清除定时器
+                    countdownElement.textContent = "GO!"; // 倒计时结束显示 "GO!"
+                }
+            }, 1000); // 每秒更新一次
+        }
+    </script>
+</body>
+</html>

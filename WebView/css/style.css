@@ -158,6 +158,7 @@ body {
 .health-fill-blue {
     position: relative;
     height: 100%;
+    width: 5%;
     right: 0;
     background-color: #1a81e2;
 }
@@ -188,6 +189,7 @@ body {
 .self-health-fill {
     position: relative;
     height: 100%;
+    width: 5%;
     background-color: red;
     border-radius: 5px;
 }
@@ -211,14 +213,43 @@ body {
     padding: 10px; /* 根据需要设置内边距 */
 }
 
+/* 屏幕中心显示样式 */
+
 /* 瞄准线 */
+
 .center-display {
-    position: absolute;
+    position: relative;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
 }
+.cross-heat {
+    position: absolute; /* 绝对定位 */
+    top: 50%; /* 自身高度的 50% 在父元素中心 */
+    left: 50%; /* 自身宽度的 50% 在父元素中心 */
+    transform: translate(-50%, -50%); /* 使其偏移一半的自身宽高，实现完美居中 */
+    z-index: 3; /* 设置 z-index，使其在底层 */
+}
+
+.cross-circle {
+    position: absolute; /* 绝对定位 */
+    top: 50%; /* 自身高度的 50% 在父元素中心 */
+    left: 50%; /* 自身宽度的 50% 在父元素中心 */
+    transform: translate(-50%, -50%); /* 使其偏移一半的自身宽高，实现完美居中 */
+    z-index: 1; /* 设置 z-index，使其在底层 */
+}
+
+.crosshair {
+    position: absolute; /* 绝对定位 */
+    top: 50%; /* 自身高度的 50% 在父元素中心 */
+    left: 50%; /* 自身宽度的 50% 在父元素中心 */
+    transform: translate(-50%, -50%); /* 使其偏移一半的自身宽高，实现完美居中 */
+    font-size: 25px; /* 十字标记的大小 */
+    color: rgb(255, 255, 255); /* 十字标记颜色 */
+}
+
+
 /* 机器人状态 */
 .robot-status {
     position: relative;
