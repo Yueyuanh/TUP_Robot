@@ -89,7 +89,7 @@
             <div class="bottom-left">
                 <div class="status">
                     <p>系统信息</p>
-                    <p>当前状态...</p>
+                    <div id="results"></div>
                 </div>
 
                 <div class="self-health-bar-container">
@@ -117,26 +117,66 @@
                 </div>
             </div>
 
+
             <!-- 对话框 -->
-            <div class="dialog" id="dialog">
-                <h3>选择队伍</h3>
-                <button id="red-button" style="background-color: red; color: white;">红方</button>
-                <button id="blue-button" style="background-color: #1a81e2; color: white;">蓝方</button>
-                <input type="text" id="team-name" placeholder="请输入队名">
-                <button id="confirm-button">确认</button>
-                <button id="toggle-button" style="background-color: rgb(225, 97, 97); color: white;">开始比赛</button>
+            <div class="dialog" id="dialog" style="display: none;">
+                <div class="header">
+                    <h3>设置面板</h3>
+                    <span class="ip">@125YueYuanhaoo</span>
+                </div>
+                <div class="content">
+                    <div class="section">
+                        <h3>登录</h3>
+                        <select id="wifiDropdown">
+                            <option value="R1">选择IP地址</option>
+                        </select>
+                        <div class="update" id="update">
+                            <button id="update-button">刷新</button>
+                        </div>                        
+                        <div class="sign-up" id="sign-up">
+                            <button id="login-button">登录</button>
+                        </div>
+
+                        
+                        <div class="start" id="start">
+                            <button id="start-button">开始比赛</button>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <h3>队伍设置</h3>
+                        <class class="team-select">
+                            <button id="red-button" style="background-color: red; color: white;">红方</button>
+                            <button id="blue-button" style="background-color: #1a81e2; color: white;">蓝方</button>   
+                        </class>
+                       
+                    </div>
+                    <div class="section">
+                        <h3>硬件设置</h3>
+                        <label>控制灵敏度 <span>36</span></label>
+                        <input type="range" value="36" min="0" max="100">
+                        <br>
+                        <label id="volume-text">背景音量设置 <span>80</span></label>
+                        <input id="volume" type="range" value="80" min="0" max="100">
+                        <br>
+                        <label>音量设置 <span>50</span></label>
+                        <input type="range" value="50" min="0" max="100">
+                    </div>
+                    <div class="section">
+                        <h3>操作设置</h3>
+                        <button>隐藏</button>
+                        <button>清除</button>
+                        <p>准心显示 <span>显示</span></p>
+                        <p>机器人操作方式 <span>手动</span></p>
+                        <p class="description">在准备阶段可以选择机器人操作方式…</p>
+                    </div>
+                </div>
+                <div class="footer">
+                    <span>文件传输</span>
+                    <span>模式 <span class="mode">正常</span></span>
+                </div>
             </div>
 
-            <div id="overlay"></div>
-            
-            <!-- 设置对话框   -->
-            <div id="settings-dialog">
-                <h2>设置</h2>
-                <label>
-                    <input type="checkbox" id="music-toggle" checked />
-                    背景音乐开关
-                </label>
-            </div>
+        
         </div>
 
     <script src="js/script.js"></script>

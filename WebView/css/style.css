@@ -307,83 +307,136 @@ body {
 
 /* 用户对话框样式 */
 .dialog {
-    display: none; /* 初始隐藏 */
-    position: fixed;
-    top: 50%; /* 垂直居中 */
-    left: 50%; /* 水平居中 */
-    transform: translate(-50%, -50%); /* 调整到中心位置 */
-    background-color: #ffffff; /* 背景颜色为白色 */
-    border-radius: 10px; /* 圆角 */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* 阴影效果 */
-    padding: 20px; /* 内边距 */
-    z-index: 1000; /* 确保在顶部 */
-    width: 300px; /* 固定宽度 */
-}
+    display: none;   /* 初始隐藏 */
+    background-color: #0e0e0e;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 960px;
+    /* height: 50vh;    /* 设置高度为视口高度的80% */
+    /* max-height: 600px; 设置最大高度 */ 
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 
-.dialog h3 {
-    text-align: center; /* 标题居中 */
-    margin-bottom: 15px; /* 与按钮之间的间距 */
-    color: #333333; /* 深色文字 */
-}
-
-.dialog button {
-    display: block; /* 使按钮各占一行 */
-    width: 100%; /* 按钮宽度为100% */
-    padding: 10px; /* 按钮内边距 */
-    margin: 5px 0; /* 上下间距 */
-    border: none; /* 去掉边框 */
-    border-radius: 5px; /* 圆角 */
-    background-color: #000000; /* 按钮背景色为黑色 */
-    color: #ffffff; /* 字体颜色为白色 */
-    font-size: 16px; /* 字体大小 */
-    cursor: pointer; /* 鼠标指针变化 */
-    transition: background-color 0.3s; /* 背景颜色过渡效果 */
-}
-
-.dialog button:hover {
-    background-color: #444444; /* 悬停状态为深灰色 */
-}
-
-.dialog input {
-    width: calc(100% - 20px); /* 输入框宽度 */
-    padding: 10px; /* 输入框内边距 */
-    margin: 10px 0; /* 上下间距 */
-    border: 1px solid #ccc; /* 边框为浅灰色 */
-    border-radius: 5px; /* 圆角 */
-    box-sizing: border-box; /* 让内边距和边框计入宽度 */
-    background-color: #f2f2f2; /* 输入框背景为浅灰色 */
-    color: #000000; /* 输入框文字颜色为黑色 */
-}
-
-/* 设置对话框 */
-#settings-dialog {
-    display: none; /* 初始隐藏对话框 */
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    border-radius: 8px; /* 边角圆润 */
-    background-color: rgba(30, 30, 30, 0.9); /* 深色背景和透明度 */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* 阴影效果 */
-    padding: 20px;
     z-index: 1000;
 }
 
-#overlay {
-    display: none; /* 初始隐藏遮罩 */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* 半透明的黑色 */
-    z-index: 999; /* 使遮罩在对话框下 */
+.header {
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #555;
 }
 
-input[type="checkbox"] {
-    margin-right: 5px; /* 复选框右边距 */
+.content {
+    display: flex;          /* 使用弹性布局 */
+    flex-wrap: nowrap;     /* 不换行 */
+    gap: 20px;             /* 设置横向间距 */
+    padding: 20px;
 }
 
+.section {
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    padding: 20px;
+    flex: 1;               /* 每个 section 平分空间 */
+}
+
+.section h3 {
+    margin: 0 0 10px 0;
+}
+
+.section button {
+    background-color: #4a4a4a;
+    border: none;
+    padding: 10px;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.section select {
+    width: 100%; /* 或者设置具体宽度 */
+    padding: 10px;
+    background-color: #3a3a3a; /* 可选 */
+    color: white; /* 可选 */
+    border: none; /* 去掉边框 */
+    border-radius: 4px; /* 添加圆角 */
+    margin-top: 20px; /* 增加外边距 */
+    margin-bottom: 20px; /* 增加外边距 */
+}
+
+.sign-up button {
+    width: 100%; /* 或者 设置具体宽度 */
+    padding: 10px; /* 增加内边距 */
+    background-color: #4a4a4a; /* 按钮背景颜色 */
+    color: white; /* 按钮字体颜色 */
+    border: none; /* 去除边框 */
+    border-radius: 4px; /* 圆角效果 */
+    cursor: pointer; /* 鼠标悬停时变成手指 */
+    margin-bottom: 20px; /* 增加外边距 */
+
+}
+
+.update button {
+    width: 100%; /* 或者 设置具体宽度 */
+    padding: 10px; /* 增加内边距 */
+    background-color: #4a4a4a; /* 按钮背景颜色 */
+    color: white; /* 按钮字体颜色 */
+    border: none; /* 去除边框 */
+    border-radius: 4px; /* 圆角效果 */
+    cursor: pointer; /* 鼠标悬停时变成手指 */
+    margin-bottom: 20px; /* 增加外边距 */
+
+}
+
+
+.start button {
+    width: 100%; /* 或者 设置具体宽度 */
+    padding: 10px; /* 增加内边距 */
+    background-color: #716e6e; /* 按钮背景颜色 */
+    color: white; /* 按钮字体颜色 */
+    border: none; /* 去除边框 */
+    border-radius: 4px; /* 圆角效果 */
+    cursor: pointer; /* 鼠标悬停时变成手指 */
+}
+
+.team-select button {
+    width: 40%; /* 或者 设置具体宽度 */
+    padding: 10px; /* 增加内边距 */
+    background-color: #716e6e; /* 按钮背景颜色 */
+    color: white; /* 按钮字体颜色 */
+    border: none; /* 去除边框 */
+    border-radius: 4px; /* 圆角效果 */
+    cursor: pointer; /* 鼠标悬停时变成手指 */
+}
+
+.section p {
+    margin: 10px 0;
+}
+
+.section .description {
+    font-size: 0.9em;
+    color: #bbb;
+}
+
+.footer {
+    padding: 20px;
+    text-align: right;
+    border-top: 1px solid #555;
+}
+
+.footer span {
+    margin: 0 20px;
+}
+
+.footer .mode {
+    color: red;
+}
 /* 倒计时样式 */
 #countdown {
     display: none; /* 初始隐藏遮罩 */

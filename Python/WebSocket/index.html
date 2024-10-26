@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>实时时间</title>
+</head>
+
+<body>
+    <h1>实时时间：</h1>
+    <p id="time"></p>
+
+    <script>
+        function connectWebSocket() {
+            var socket = new WebSocket('ws://localhost:5001');
+
+            socket.onopen = function (event) {
+                console.log('WebSocket连接已打开');
+            };
+
+            socket.onmessage = function (event) {
+                var timeElement = document.getElementById('time');
+                var dt_ms = event.data;
+                console.log(dt_ms);
+                timeElement.textContent = dt_ms;
+            };
+
+            socket.onclose = function (event) {
+                console.log('WebSocket连接已关闭');
+                // 尝试重新连接
+                setTimeout(connectWebSocket, 1000/2);
+            };
+        }
+
+        connectWebSocket();
+    </script>
+</body>
+
+</html>

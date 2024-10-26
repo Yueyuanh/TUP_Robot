@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WiFi Scanner</title>
+    <script>
+       async function fetchWifiList() {
+            const response = await fetch('/scan_wifi');
+            const ssids = await response.json();
+            const dropdown = document.getElementById('wifiDropdown');
+
+            // 清空下拉框选项
+            dropdown.innerHTML = '';  // 先清空下拉框内容
+
+            // 判断 ssid 是否为空
+            if (ssids.length === 0) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = '无信号';  // 如果没有信号则添加此选项
+                dropdown.appendChild(option);
+            } else {
+                // 添加新的选项
+                ssids.forEach(ssid => {
+                    const option = document.createElement('option');
+                    option.value = ssid;
+                    option.textContent = ssid;
+                    dropdown.appendChild(option);
+                });
+            }
+        }
+
+    </script>
+</head>
+<body>
+    <h1>扫描以 '192' 开头的 Wi-Fi 网络</h1>
+    <select id="wifiDropdown">
+        <option value="">选择WiFi</option>
+    </select>
+    <button onclick="fetchWifiList()">更新</button>
+</body>
+</html>

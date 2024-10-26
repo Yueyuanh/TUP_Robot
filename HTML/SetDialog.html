@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置面板</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2d2d2d;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .dialog {
+            background-color: #0e0e0e;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 960px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #555;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .section {
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .section h3 {
+            margin: 0 0 10px 0;
+        }
+
+        .section button {
+            background-color: #4a4a4a;
+            border: none;
+            padding: 10px;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .section p {
+            margin: 10px 0;
+        }
+
+        .section .description {
+            font-size: 0.9em;
+            color: #bbb;
+        }
+
+        .footer {
+            padding: 20px;
+            text-align: right;
+            border-top: 1px solid #555;
+        }
+
+        .footer span {
+            margin: 0 20px;
+        }
+
+        .footer .mode {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="dialog">
+        <div class="header">
+            <h2>设置面板</h2>
+            <span class="ip">10.0.0.130</span>
+        </div>
+        <div class="content">
+            <div class="section">
+                <h3>登录</h3>
+                <select>
+                    <option value="R1">R1 - Hero</option>
+                </select>
+                <button>登录</button>
+            </div>
+            <div class="section">
+                <h3>性能设置</h3>
+                <p>底盘类型 <span>不可设置</span></p>
+                <p>42mm发射机构类型 <span>默认设置</span></p>
+                <p class="description">每局比赛需设置机器人性能，准备及自检阶段允许修改性能设置…</p>
+            </div>
+            <div class="section">
+                <h3>硬件设置</h3>
+                <label>控制灵敏度 <span>36</span></label>
+                <input type="range" value="36" min="0" max="100">
+                <label>音量设置 <span>50</span></label>
+                <input type="range" value="50" min="0" max="100">
+                <label>背景音量设置 <span>50</span></label>
+                <input type="range" value="50" min="0" max="100">
+            </div>
+            <div class="section">
+                <h3>UI设置/操作设置</h3>
+                <button>隐藏</button>
+                <button>清除</button>
+                <p>准心显示 <span>显示</span></p>
+                <p>机器人操作方式 <span>手动</span></p>
+                <p class="description">在准备阶段可以选择机器人操作方式…</p>
+            </div>
+        </div>
+        <div class="footer">
+            <span>文件传输</span>
+            <span>模式 <span class="mode">正常</span></span>
+        </div>
+    </div>
+</body>
+</html>

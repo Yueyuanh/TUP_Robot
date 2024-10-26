@@ -1,4 +1,4 @@
-// 处理欢迎界面的显示逻辑
+// <--------------------------处理欢迎界面的显示逻辑--------------------------->
 
 // document.getElementById("welcome-screen").style.display = "none"; // 隐藏欢迎界面
 // document.getElementById("main-screen").style.display = "block"; // 显示主界面
@@ -25,11 +25,80 @@ document.getElementById("start-game").onclick = function() {
     document.getElementById("main-screen").style.display = "block"; // 显示主界面
     ready_bgm.play(); // 只有在欢迎界面时才播放音乐
 
-    // if(document.getElementById("main-screen").style.display!='none'){
-    //     ready_bgm.play(); // 只有在欢迎界面时才播放音乐
-    // }
-
 };
+// <--------------------------处理欢迎界面的显示逻辑--------------------------->
+
+// 监听视频加载错误
+const backgroundImage = document.getElementById("background-image");
+backgroundImage.onerror = function() {
+    backgroundImage.style.display = "none"; // 隐藏视频
+    noStreamText.style.display = "block"; // 显示"No Stream"
+    document.body.style.backgroundColor = "#888"; // 设置背景为灰色
+};
+
+// <--------------------------WebSocket 连接--------------------------->
+
+const ws = new WebSocket('ws://localhost:5001'); // 连接到 WebSocket 服务器
+
+
+//收到信息
+ws.onmessage = function(event) {
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML += `<p>${event.data}</p>`; // 显示接收到的消息
+
+    ssids = event.data; // 解析 SSIDs 列表
+    
+     // 清空下拉框选项
+     dropdown.innerHTML = '';  // 先清空下拉框内容
+
+     // 判断 ssid 是否为空
+     if (ssids==='404') {
+         const option = document.createElement('option');
+         option.value = '无信号';
+         option.textContent = '无信号';  // 如果没有信号则添加此选项
+         dropdown.appendChild(option);
+     } else {
+         // 添加新的选项
+             console.log(ssids);
+             const option = document.createElement('option');
+             option.value = ssids;
+             option.textContent = ssids;
+             dropdown.appendChild(option);
+    
+     }
+};
+
+//发送刷新扫描请求
+document.getElementById('update-button').onclick = function() {
+    ws.send('scan');  // 发送扫描请求
+    backgroundImage.style.display = "none"; // 隐藏视频
+    noStreamText.style.display = "block"; // 显示"No Stream"
+    document.body.style.backgroundColor = "#888"; // 设置背景为灰色
+};
+
+//登录刷新画面
+document.getElementById('login-button').onclick = function() {
+    const selectedSSID = dropdown.value; // 获取选中的 SSID};
+
+    if (selectedSSID === '404') {
+        backgroundImage.src = ""; // 清空背景图片源
+        backgroundImage.style.display = "none"; // 隐藏图片
+    } else {
+        backgroundImage.src = ""; // 清空背景图片源
+        document.getElementById("background-image").src = `http://${selectedSSID}:81/stream`; // 生成新 URL
+        backgroundImage.style.display = "block"; // 视频
+        noStreamText.style.display = "none"; // 关闭"No Stream"     
+    }
+ 
+}
+
+//报错
+ws.onerror = function(error) {
+    console.error('WebSocket错误:', error); // 打印错误信息
+};
+
+// <--------------------------WebSocket 连接--------------------------->
+
 
 
 
@@ -43,10 +112,9 @@ const healthFill = document.getElementById("self-health-fill");
 const healthText = document.getElementById("health-text");
 //对话框
 const dialog = document.getElementById("dialog");
-//设置对话框
-const settingsDialog = document.getElementById('settings-dialog');
-const overlay = document.getElementById('overlay');
-const musicToggle = document.getElementById('music-toggle');
+//IP选择框
+const dropdown = document.getElementById("wifiDropdown");
+
 //倒计时
 let countdownElement = document.getElementById("countdown");
 
@@ -56,21 +124,11 @@ const timeDisplay = document.querySelector(".time"); // 获取时间显示的元
 let isGameStarted = false; // 标记比赛是否开始
 
 
-// 设置背景图片源
-document.getElementById("background-image").src = "http://192.168.4.1:81/stream";
 
-// 监听视频加载错误
-
-const backgroundImage = document.getElementById("background-image");
-backgroundImage.onerror = function() {
-    backgroundImage.style.display = "none"; // 隐藏视频
-    noStreamText.style.display = "block"; // 显示"No Stream"
-    document.body.style.backgroundColor = "#888"; // 设置背景为灰色
-};
+// <--------------------------UI 更新--------------------------->
 
 
 // 血量条更新函数
-
 function updateHealthBar(who, healthValue) {
     let fillElement;
     let healthTextElement;
@@ -107,6 +165,10 @@ function updateHealthBar(who, healthValue) {
 
     }
 }
+// <--------------------------UI 更新--------------------------->
+
+
+// <--------------------------对话框--------------------------->
 
 
 // 监听键盘事件
@@ -116,19 +178,9 @@ document.addEventListener("keydown", function(event) {
             dialog.style.display = "none"; // 关闭对话框
         } else {
             dialog.style.display = "block"; // 显示对话框
-            settingsDialog.style.display = "none"; // 关闭对话框
         }
     }
-    else if (event.key === "o" || event.key === "O") {
-        if (settingsDialog.style.display === "block") {
-            settingsDialog.style.display = "none"; // 关闭对话框
 
-        } else {
-            settingsDialog.style.display = "block"; // 显示对话框
-            dialog.style.display = "none"; // 关闭对话框
-
-        }
-    }
 });
 
 // 选择红方
@@ -146,7 +198,7 @@ document.getElementById("blue-button").onclick = function() {
 };
 
 // 切换比赛状态
-document.getElementById("toggle-button").onclick = function() {
+document.getElementById("start-button").onclick = function() {
     if (!isGameStarted) {
         totalTime = 7 * 60; // 每次开始时重置为7分钟
 
@@ -192,8 +244,11 @@ function startCountdown() {
             if (totalTime <= 0) {
                 clearInterval(countdown); // 停止倒计时
                 alert("比赛结束！"); // 比赛结束时的提示
-                document.getElementById("toggle-button").textContent = "开始比赛"; // 恢复按钮文本
+                document.getElementById("start-button").textContent = "开始比赛"; // 恢复按钮文本
                 isGameStarted = false; // 更新比赛状态为未开始
+                ready_bgm.play(); // 播放准备音乐
+                start_bgm.pause(); // 暂停开始音乐
+                start_bgm.currentTime = 0; // 重置开始音乐播放位置
                 return;
             }
 
@@ -223,37 +278,35 @@ function startCountdown5(seconds) {
     }, 1000); // 每秒更新一次
 }
 
-  // 监听背景音乐开关
-  musicToggle.addEventListener('change', () => {
-    if (musicToggle.checked) {
-        if (isGameStarted) {
-            start_bgm.play(); // 开启音乐
-        }
-        else {
-            ready_bgm.play(); // 开启音乐
-        }
-        // start_bgm.play(); // 开启音乐
-    } else {
-        if (isGameStarted) {
-            start_bgm.pause(); // 
-        }
-        else {
-            ready_bgm.pause(); // 
-        } 
-    }
-});
+
+// 获取音量滑动条
+    const volumeSlider = document.getElementById('volume');
+    const volumeText = document.getElementById('volume-text');
+    // 设置初始音量
+    start_bgm.volume = 0.8; // 音量范围是 0.0 到 1.0
+    ready_bgm.volume = 0.8; // 同样设置准备音乐的音量
+
+    // 监听音量滑动条的变化
+    volumeSlider.addEventListener('input', () => {
+        const volume = volumeSlider.value/100; // 获取滑动条的当前值
+        //volume始终取整
 
 
+        start_bgm.volume = volume; // 设置背景音乐的音量
+        ready_bgm.volume = volume; // 设置准备音乐的音量
 
+        volumeText.textContent = `背景音量设置 ${Math.round(volume * 100)}`; // 更新音量显示
+
+    });
+
+// <--------------------------对话框--------------------------->
+
+
+// <--------------------------键鼠监听--------------------------->
 
 // 键鼠监听
 const tooltip     = document.getElementById('tooltip');
 const tooltip_key = document.getElementById('tooltip-key');
-
-// document.addEventListener('mousemove', (event) => {
-//     tooltip.style.left = event.pageX + 'px';
-//     tooltip.style.top = event.pageY + 'px';
-// });
 
 document.addEventListener('keydown', (event) => {
     // 显示按键信息
@@ -268,7 +321,47 @@ document.addEventListener('keyup', () => {
 });
 
 
+document.addEventListener('mousedown', (event) => {
+    let button;
+    switch (event.button) {
+        case 0:
+            button = '左键';
 
+            currentRatio += 0.1; // 每次点击增加 0.1
+            if (currentRatio > 1) { // 超过 1 后重置
+                currentRatio = 0;
+            }
+            drawCircle(currentRatio); // 绘制当前比例的圆
+            // tooltip.style.display = 'none'; // 放开鼠标时隐藏提示框
+            toggleLED('on')
+            break;
+        case 1:
+            button = '中键';
+            break;
+        case 2:
+            button = '右键';
+            break;
+        default:
+            button = '其他';
+            break;
+    }
+    tooltip.textContent = `鼠标按键: ${button}`;
+    tooltip.style.display = 'block';
+
+});
+
+// 鼠标点击事件
+document.addEventListener('mouseup', () => {
+    tooltip.textContent = `鼠标按键: 无`;
+    tooltip.style.display = 'block';
+    toggleLED('off')
+
+});
+
+// <--------------------------键鼠监听--------------------------->
+
+
+// <--------------------------热量环动画--------------------------->
 
 // 热量环动画
 let currentRatio = 0; // 当前比例，初始为 0.1
@@ -296,6 +389,7 @@ function drawCircle(value) {
         
 }
 
+//外环
 const canvas_outer = document.getElementById('circle-outer');
 if (!canvas_outer.getContext('2d')) {
     console.log('浏览器不支持Canvas');
@@ -322,42 +416,24 @@ function closeCentercanvas(bool) {
 
 }
 
-document.addEventListener('mousedown', (event) => {
-    let button;
-    switch (event.button) {
-        case 0:
-            button = '左键';
-
-            currentRatio += 0.1; // 每次点击增加 0.1
-            if (currentRatio > 1) { // 超过 1 后重置
-                currentRatio = 0;
-            }
-            drawCircle(currentRatio); // 绘制当前比例的圆
-            // 终端输出当前比例
-            console.log(currentRatio);
-            // tooltip.style.display = 'none'; // 放开鼠标时隐藏提示框
-            break;
-        case 1:
-            button = '中键';
-            break;
-        case 2:
-            button = '右键';
-            break;
-        default:
-            button = '其他';
-            break;
-    }
-    tooltip.textContent = `鼠标按键: ${button}`;
-    tooltip.style.display = 'block';
-});
-
-// 鼠标点击事件
-document.addEventListener('mouseup', () => {
-    tooltip.textContent = `鼠标按键: 无`;
-    tooltip.style.display = 'block';
-
-
-});
 
 drawCircle(0); // 初始化
+// <--------------------------热量环动画--------------------------->
 
+
+function toggleLED(x) {
+    const selectedSSID = dropdown.value; // 获取选中的 SSID};
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", `http://${selectedSSID}/action?led=` + x, true);
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            console.log('成功:', xhr.responseText); // 成功响应处理
+        } else {
+            console.error('请求失败:', xhr.statusText); // 错误处理
+        }
+    };
+    xhr.onerror = function() {
+        console.error('请求发生错误');
+    };
+    xhr.send();
+}
