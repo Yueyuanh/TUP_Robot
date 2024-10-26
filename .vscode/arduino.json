@@ -2,6 +2,6 @@
     "configuration": "CPUFreq=240,FlashMode=qio,PartitionScheme=huge_app,FlashFreq=80,DebugLevel=none,EraseFlash=none",
     "board": "esp32:esp32:esp32cam",
     "programmer": "esp32:esptool",
-    "sketch": "TUP_Robot\\wificar.ino",
+    "sketch": "TUP_Robot\\wificar_sta\\wificar_sta.ino",
     "port": "COM12"
 }

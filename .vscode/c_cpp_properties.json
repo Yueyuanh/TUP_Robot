@@ -14,7 +14,7 @@
             ],
             "intelliSenseMode": "gcc-x64",
             "includePath": [
-                "e:\\桌面\\TUP2025\\RoboCar\\TUP_Robot",
+                "e:\\桌面\\TUP2025\\RoboCar\\TUP_Robot\\wificar_sta",
                 "C:\\Users\\Young\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esp32-arduino-libs\\idf-release_v5.1-33fbade6\\esp32\\qio_qspi\\include",
                 "C:\\Users\\Young\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\3.0.5\\cores\\esp32",
                 "C:\\Users\\Young\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\3.0.5\\variants\\esp32",
