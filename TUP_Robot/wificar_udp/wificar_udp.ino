@@ -8,10 +8,14 @@
 #include "soc/rtc_cntl_reg.h" // disable brownout problems
 #include "esp_http_server.h"
 #include "Arduino.h"
+#include "WiFiUdp.h"
 
+WiFiUDP Udp;
 // Replace with your network credentials
 const char *ssid = "TUP_Robot";        // 你的WiFi名称
 const char *password = "12345678"; // 你的WiFi密码
+char udpAddress[16]; // 你的UDP服务器地址
+const int udpPort = 12345; // 你的UDP服务器端口
 
 #define PART_BOUNDARY "123456789000000000000987654321"
 
@@ -350,75 +354,51 @@ static esp_err_t index_handler(httpd_req_t *req)
   return httpd_resp_send(req, (const char *)INDEX_HTML, strlen(INDEX_HTML));
 }
 
+
+// UDP视频流
 static esp_err_t stream_handler(httpd_req_t *req) {
     camera_fb_t *fb = NULL; // 摄像头帧指针
     esp_err_t res = ESP_OK;
     size_t _jpg_buf_len = 0; // JPEG 缓冲区长度
     uint8_t *_jpg_buf = NULL; // JPEG 缓冲区
-    char *part_buf[64]; // 用于存储分段预响应格式
-    
-    // 设置响应类型
-    res = httpd_resp_set_type(req, _STREAM_CONTENT_TYPE);
-    if (res != ESP_OK) {
-        return res; // 若设置失败则返回错误
+
+    // 改为了一个有效的循环输出图像数据
+    fb = esp_camera_fb_get(); // 获取帧
+    if (!fb) {
+        Serial.println("Camera capture failed");
+        return ESP_FAIL;
     }
 
-    // 开始逐段发送数据
-    while (true) {
-        fb = esp_camera_fb_get(); // 获取摄像头帧
-        if (!fb) {
-            Serial.println("Camera capture failed");
-            res = ESP_FAIL; // 设置错误状态
+    // 判断格式并转换为 JPEG
+    if (fb->format != PIXFORMAT_JPEG) {
+        bool jpeg_converted = frame2jpg(fb, 80, &_jpg_buf, &_jpg_buf_len);
+        esp_camera_fb_return(fb); // 返回帧缓冲
+        if (!jpeg_converted) {
+            Serial.println("JPEG compression failed");
+            return ESP_FAIL;
+        }
+    } else {
+        _jpg_buf_len = fb->len;
+        _jpg_buf = fb->buf; // 直接使用 fb 的缓冲区
+    }
+
+    // 发送图像数据通过 UDP
+    if (_jpg_buf) {
+        if (Udp.beginPacket(udpAddress, udpPort) == 1) {
+            Udp.write(_jpg_buf, _jpg_buf_len);
+            Udp.endPacket();
+            Serial.println("Sent UDP packet");
         } else {
-            // 将 JPEG 数据进行处理
-            if (fb->format != PIXFORMAT_JPEG) {
-                bool jpeg_converted = frame2jpg(fb, 80, &_jpg_buf, &_jpg_buf_len);
-                esp_camera_fb_return(fb); // 返回帧到缓冲区
-                fb = NULL; // 清空 fb
-
-                if (!jpeg_converted) {
-                    Serial.println("JPEG compression failed");
-                    res = ESP_FAIL; // 设置错误状态
-                }
-            } else {
-                _jpg_buf_len = fb->len; // 获取帧数据长度
-                _jpg_buf = fb->buf; // 指向帧数据
-            }
+            Serial.println("Failed to start UDP packet.");
         }
-
-        // 发送 JPEG 数据作为多段响应
-        if (res == ESP_OK && _jpg_buf) {
-            // 发送分段头部
-            size_t hlen = snprintf((char *)part_buf, 64, _STREAM_PART, _jpg_buf_len);
-            res = httpd_resp_send_chunk(req, (const char *)part_buf, hlen); // 发送内容头
-        }
-        
-        if (res == ESP_OK) {
-            res = httpd_resp_send_chunk(req, (const char *)_jpg_buf, _jpg_buf_len); // 发送图像数据
-        }
-        
-        if (res == ESP_OK) {
-            res = httpd_resp_send_chunk(req, _STREAM_BOUNDARY, strlen(_STREAM_BOUNDARY)); // 发送边界
-        }
-        
-        // 清理
-        if (fb) {
-            esp_camera_fb_return(fb); // 返回帧缓冲
-            fb = NULL; // 清空 fb
-            _jpg_buf = NULL; // 清空 JPEG 缓冲区
-        } else if (_jpg_buf) {
-            free(_jpg_buf); // 如果分配了 JPEG 缓冲区则释放
-            _jpg_buf = NULL; // 清空 JPEG 缓冲区
-        }
-        
-        if (res != ESP_OK) {
-            break; // 如果发送失败则退出循环
-        }
-        
-        Serial.printf("MJPG: %uB\n", (uint32_t)(_jpg_buf_len)); // 可选：打印每个JPEG包的大小
     }
-    
-    return res; // 返回最终的状态
+
+    // 释放资源
+    if (_jpg_buf) {
+        free(_jpg_buf); // 如果有分配的 JPEG 缓冲区，释放它
+    }
+
+    return res;
 }
 
 static esp_err_t cmd_handler(httpd_req_t *req)
@@ -557,22 +537,26 @@ void startCameraServer()
       .method = HTTP_GET,
       .handler = cmd_handler, //cmd_handler  首页的函数 句柄
       .user_ctx = NULL};
-  httpd_uri_t stream_uri = {
-      .uri = "/stream",
-      .method = HTTP_GET,
-      .handler = stream_handler,
-      .user_ctx = NULL};
-  if (httpd_start(&camera_httpd, &config) == ESP_OK)
+
+  // httpd_uri_t stream_uri = {
+  //     .uri = "/stream",
+  //     .method = HTTP_GET,
+  //     .handler = stream_handler,
+  //     .user_ctx = NULL};
+  //     //
+  
+  if (httpd_start(&camera_httpd, &config) == ESP_OK)//
   {
     httpd_register_uri_handler(camera_httpd, &index_uri);
     httpd_register_uri_handler(camera_httpd, &cmd_uri);
   }
   config.server_port += 1;
   config.ctrl_port += 1;
-  if (httpd_start(&stream_httpd, &config) == ESP_OK)
-  {
-    httpd_register_uri_handler(stream_httpd, &stream_uri);
-  }
+
+  // if (httpd_start(&stream_httpd, &config) == ESP_OK)
+  // {
+  //   httpd_register_uri_handler(stream_httpd, &stream_uri);
+  // }
 }
 
 
@@ -611,7 +595,7 @@ void setup()
   config.pin_sccb_scl = SIOC_GPIO_NUM;
   config.pin_pwdn = PWDN_GPIO_NUM;
   config.pin_reset = RESET_GPIO_NUM;
-  config.xclk_freq_hz = 30000000;
+  config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
 
   if (psramFound())
@@ -644,6 +628,11 @@ void setup()
   Serial.println("");
   Serial.println("WiFi connected");
 
+  // 获取网关 IP 地址并转换为字符串
+  IPAddress gateway = WiFi.gatewayIP();
+  snprintf(udpAddress, sizeof(udpAddress), "%s", gateway.toString().c_str());
+  Serial.println(udpAddress);
+  
 
   Serial.println(WiFi.localIP());
   
@@ -660,8 +649,16 @@ void setup()
 
   // Start streaming web server
   startCameraServer();
+  Udp.begin(udpPort); 
+  //stream_handler(NULL);  // 直接调用，传递 NULL 作为参数（根据需要调整）
+  Serial.println("Server started");
 }
 
 void loop()
 {
+      if (WiFi.status() == WL_CONNECTED) {
+        // 可以定期调用流处理
+        stream_handler(NULL);  // 直接调用，传递 NULL 作为参数（根据需要调整）
+    }
+    delay(200); // 控制调用频率，避免过高的CPU使用率
 }

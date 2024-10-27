@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32-CAM Robot Controller</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0 auto;
+            padding-top: 30px;
+        }
+        .button {
+            background-color: #28a745; /* Green color */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+        img {
+            width: auto;
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>ESP32-CAM Robot Controller</h1>
+    <img id="photo" src="http://192.168.137.141:81/stream" style="transform: rotate(180deg);" />
+    <div>
+        <button class="button" onclick="sendCommand('forward')">前进</button>
+        <button class="button" onclick="sendCommand('backward')">后退</button>
+        <button class="button" onclick="sendCommand('left')">左转</button>
+        <button class="button" onclick="sendCommand('right')">右转</button>
+        <button class="button" onclick="sendCommand('stop')">停止</button>
+    </div>
+
+    <script>
+        function sendCommand(command) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "http://192.168.4.1:81/action?go=" + command, true); // 使用ESP32的IP地址
+            xhr.onload = function() {
+                if (xhr.status !== 200) {
+                    console.error('Error sending command:', xhr.statusText);
+                } else {
+                    console.log('Command sent successfully:', command);
+                }
+            };
+            xhr.onerror = function() {
+                console.error('Request failed.');
+            };
+            xhr.send();
+        }
+    </script>
+</body>
+</html>

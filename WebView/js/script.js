@@ -1,3 +1,4 @@
+
 // <--------------------------处理欢迎界面的显示逻辑--------------------------->
 
 // document.getElementById("welcome-screen").style.display = "none"; // 隐藏欢迎界面
@@ -302,64 +303,6 @@ function startCountdown5(seconds) {
 // <--------------------------对话框--------------------------->
 
 
-// <--------------------------键鼠监听--------------------------->
-
-// 键鼠监听
-const tooltip     = document.getElementById('tooltip');
-const tooltip_key = document.getElementById('tooltip-key');
-
-document.addEventListener('keydown', (event) => {
-    // 显示按键信息
-    tooltip_key.textContent = `键盘按键: ${event.key}`;
-    tooltip_key.style.display = 'block';
-});
-
-document.addEventListener('keyup', () => {
-    tooltip_key.textContent = `键盘按键: 无`;
-    tooltip_key.style.display = 'block';
-    // tooltip_key.style.display = 'none'; // 放开按键时隐藏提示框
-});
-
-
-document.addEventListener('mousedown', (event) => {
-    let button;
-    switch (event.button) {
-        case 0:
-            button = '左键';
-
-            currentRatio += 0.1; // 每次点击增加 0.1
-            if (currentRatio > 1) { // 超过 1 后重置
-                currentRatio = 0;
-            }
-            drawCircle(currentRatio); // 绘制当前比例的圆
-            // tooltip.style.display = 'none'; // 放开鼠标时隐藏提示框
-            toggleLED('on')
-            break;
-        case 1:
-            button = '中键';
-            break;
-        case 2:
-            button = '右键';
-            break;
-        default:
-            button = '其他';
-            break;
-    }
-    tooltip.textContent = `鼠标按键: ${button}`;
-    tooltip.style.display = 'block';
-
-});
-
-// 鼠标点击事件
-document.addEventListener('mouseup', () => {
-    tooltip.textContent = `鼠标按键: 无`;
-    tooltip.style.display = 'block';
-    toggleLED('off')
-
-});
-
-// <--------------------------键鼠监听--------------------------->
-
 
 // <--------------------------热量环动画--------------------------->
 
@@ -421,6 +364,123 @@ drawCircle(0); // 初始化
 // <--------------------------热量环动画--------------------------->
 
 
+
+// <--------------------------键鼠监听--------------------------->
+
+// 键鼠监听
+const tooltip     = document.getElementById('tooltip');
+const tooltip_key = document.getElementById('tooltip-key');
+
+document.addEventListener('keydown', (event) => {
+    // 显示按键信息
+    tooltip_key.textContent = `键盘按键: ${event.key}`;
+    tooltip_key.style.display = 'block';
+
+});
+
+document.addEventListener('keyup', () => {
+    tooltip_key.textContent = `键盘按键: 无`;
+    tooltip_key.style.display = 'block';
+    // tooltip_key.style.display = 'none'; // 放开按键时隐藏提示框
+});
+
+
+document.addEventListener('mousedown', (event) => {
+    let button;
+    switch (event.button) {
+        case 0:
+            button = '左键';
+
+            //当对话框不存在的时候才能点击
+            if(dialog.style.display === "none"){
+
+                currentRatio += 0.1; // 每次点击增加 0.1
+                if (currentRatio > 1) { // 超过 1 后重置
+                    currentRatio = 0;
+                }
+                drawCircle(currentRatio); // 绘制当前比例的圆
+
+                //开枪决策
+                toggleLED('on');
+                //输出日志
+                console.log('on');
+
+  
+            }
+
+            break;
+        case 1:
+            button = '中键';
+            break;
+        case 2:
+            button = '右键';
+            break;
+        default:
+            button = '其他';
+            break;
+    }
+    tooltip.textContent = `鼠标按键: ${button}`;
+    tooltip.style.display = 'block';
+
+});
+
+// 鼠标点击事件
+document.addEventListener('mouseup', () => {
+    tooltip.textContent = `鼠标按键: 无`;
+    tooltip.style.display = 'block';
+    toggleLED('off');
+
+});
+
+
+
+function handleKeyDown(event) {
+    switch(event.key) {
+      case 'w':
+        controlCar('forward');
+        break;
+      case 'a':
+        controlCar('left');
+        break;
+      case 's':
+        controlCar('backward');
+        break;
+      case 'd':
+        controlCar('right');
+        break;
+      case 'l':
+        toggleLED('on');
+        break;
+    }
+  }
+  
+  function handleKeyUp(event) {
+
+    console.log("stop");
+    switch(event.key)
+    {
+      case 'l':
+        toggleLED('off');
+        break;
+      case 'w':
+      case 'a':
+      case 's':
+      case 'd':
+        stop('stop');
+        stop('stop');
+
+        break;
+
+    }
+  }
+  
+  window.onload = function() {
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
+  };
+// <--------------------------键鼠监听--------------------------->
+
+
 function toggleLED(x) {
     const selectedSSID = dropdown.value; // 获取选中的 SSID};
     var xhr = new XMLHttpRequest();
@@ -437,3 +497,27 @@ function toggleLED(x) {
     };
     xhr.send();
 }
+
+function stop(x) {
+    //x='forward'
+    //x='backward'
+    //x='left'
+    //x='right'
+    console.log(x);
+    const selectedSSID = dropdown.value; // 获取选中的 SSID};
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", `http://${selectedSSID}/action?go=` + x, true);
+    xhr.send();
+}
+var lastSentTime = 0; // 上一次发送指令的时间
+var sendInterval = 100; // 发送指令的间隔
+function controlCar(x) {
+    const selectedSSID = dropdown.value; // 获取选中的 SSID};
+    var currenTime=Date.now();
+    if (currenTime - lastSentTime > sendInterval) {
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", `http://${selectedSSID}/action?go=` + x, true);
+      xhr.send();
+      lastSentTime = currenTime; // 更新上次发送时间
+    }
+  }
