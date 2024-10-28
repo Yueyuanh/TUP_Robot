@@ -77,9 +77,9 @@ git clone https://github.com/TUP_Robot.git
 
 ### PC端
 
-将热点名称改为TUP_Robot
+将热点名称改为`TUP_Robot`
 
-将热点密码改为12345678
+将热点密码改为`12345678`
 
 ``` windows
 //对应代码文件TUP_Robot/TUP_Robot/wificar_sta.ino

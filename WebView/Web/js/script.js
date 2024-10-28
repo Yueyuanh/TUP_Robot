@@ -1,8 +1,8 @@
 
 // <--------------------------处理欢迎界面的显示逻辑--------------------------->
 
-// document.getElementById("welcome-screen").style.display = "none"; // 隐藏欢迎界面
-// document.getElementById("main-screen").style.display = "block"; // 显示主界面
+document.getElementById("welcome-screen").style.display = "none"; // 隐藏欢迎界面
+document.getElementById("main-screen").style.display = "block"; // 显示主界面
 
 const welcome_bgm = document.getElementById("welcome-audio");
 const ready_bgm = document.getElementById("ready-audio");
@@ -451,6 +451,7 @@ function handleKeyDown(event) {
       case 'l':
         toggleLED('on');
         break;
+
     }
   }
   
@@ -468,7 +469,6 @@ function handleKeyDown(event) {
       case 'd':
         stop('stop');
         stop('stop');
-
         break;
 
     }
@@ -521,3 +521,25 @@ function controlCar(x) {
       lastSentTime = currenTime; // 更新上次发送时间
     }
   }
+
+const map = document.getElementById("map");
+const map_img = document.getElementById("map-image");
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'M' || event.key === 'm') {
+            map.style.top = "50%";
+            map.style.left = "50%";
+            map_img.classList.add('large');
+            map_img.classList.remove('small');        
+    }
+});
+
+document.addEventListener('keyup', function(event) {
+    if (event.key === 'M' || event.key === 'm') {
+
+            map.style.top = "82%";
+            map.style.left = "90%";
+            map_img.classList.add('small');   
+            map_img.classList.remove('large');
+         }
+});

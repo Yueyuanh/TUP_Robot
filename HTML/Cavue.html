@@ -1,0 +1,130 @@
+<!DOCTYPE HTML>
+ <html lang="en">
+  <meta charset="utf-8">
+  <head><title>Draw a Circle</title>
+   <style type="text/css">
+    body {
+      background-color: #000000;
+      margin: 0px;
+      overflow: hidden;
+    }
+   </style>
+  </head>
+ <body>
+<script>
+  var	canvas = document.createElement( 'canvas' ),
+  context = canvas.getContext( '2d' );
+  var canvasWidth = window.innerWidth; 
+  canvasHeight = window.innerHeight;
+  var mylines = [];
+ var myline = new MyLine(1357.3581337957253,389.95216244936756,1335.1900222318359,439.901328672196,2,30,"#FFFFFF");
+ mylines.push(myline);
+ 
+ 
+ 
+  init();
+ 
+  function init() {
+    document.body.appendChild(canvas); 
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+setInterval(loop, 150);
+  }
+ 
+  function loop(){
+context.clearRect(0,0,canvas.width,canvas.height);
+for(var mI = 0 ; mI < mylines.length ; mI++){
+var myline = mylines[mI];
+myline.draw();
+myline.update();
+}
+  }
+  
+  //画一个拖尾巴的线
+  //该线存在起点和终点，长度，半径大小，颜色
+  function MyLine(sx,sy,ex,ey,rad,len,color){
+this.sx = sx;
+this.sy = sy;
+this.ex = ex;
+this.ey = ey;
+this.rad = rad;
+this.len = len;
+this.color = color;
+this.tx = this.sx;
+this.ty = this.sy;
+this.xFlage = 0;
+this.yFlage = 0;
+//判断起始位置大小
+if(sx <= ex){
+this.xFlage = 1;
+}else{
+this.xFlage = 0;
+}
+if(sy <= ey){
+this.yFlage = 1;
+}else{
+this.yFlage = 0;
+}
+//角度
+  	this.angle = Math.atan2( this.ey - this.sy, this.ex - this.sx );
+//开始画
+this.draw = function(){
+context.beginPath();
+context.fillStyle = this.color;
+context.globalAlpha = 0.5;
+for(var i = 0; i < this.len ; i++ ){
+context.arc(this.tx,this.ty,((this.len - i)/this.len) * this.rad, 0, Math.PI*2, true);
+this.tx -= Math.cos(this.angle) * this.len * 0.05;
+this.ty -= Math.sin(this.angle) * this.len * 0.05;
+}
+context.closePath();
+context.fill();
+}
+//更新
+this.update = function(){
+var tXF = 0;
+var tYF = 0;
+if(this.sx <= this.ex){
+tXF = 1;
+}else{
+tXF = 0;
+}
+if(this.sy <= this.ey){
+tYF = 1;
+}else{
+tYF = 0;
+}
+if(this.xFlage == tXF && this.yFlage == tYF){
+this.sx += Math.cos(this.angle) * this.len * 0.8;
+this.sy += Math.sin(this.angle) * this.len * 0.8;
+}else{
+this.sx = sx;
+this.sy = sy;
+}
+this.tx = this.sx;
+this.ty = this.sy;
+}
+//画圈圈
+this.circle = function(){
+for(var i = 3; i < 15 ; i++ ){
+context.beginPath();
+context.arc(this.ex,this.ey,i, 0, Math.PI*2, true);
+context.globalAlpha = (15 - i )/12;
+context.strokeStyle = this.color;
+context.stroke();
+}
+}
+  }
+  //两点之间的距离
+  function calculateDistance( p1x, p1y, p2x, p2y ) {
+var xDistance = p1x - p2x,
+yDistance = p1y - p2y;
+return Math.sqrt( Math.pow( xDistance, 2 ) + Math.pow( yDistance, 2 ) );
+}
+//产生随机色
+function ramColor() {
+    return '#' + ('00000' + (Math.random() * 0x1000000 << 0).toString(16)).slice(-6);
+}
+</script>
+</body>
+</html>

@@ -203,6 +203,7 @@ body {
     background-color: rgba(255, 255, 255, 0); /* 根据需要设置背景颜色 */
     padding: 10px; /* 根据需要设置内边距 */
 }
+
 /* 右侧信息栏样式 */
 .bottom-right {
     position: fixed; /* 或者使用 absolute */
@@ -211,6 +212,11 @@ body {
     width: 5%;    /* 宽度100%（根据需要调整） */
     background-color: rgba(255, 255, 255, 0); /* 根据需要设置背景颜色 */
     padding: 10px; /* 根据需要设置内边距 */
+
+    display: flex;               /* 启用 flexbox */
+    flex-direction: row;        /* 水平方向排列 */
+    justify-content: space-between; /* 在主轴上分散对齐 */
+    align-items: center;        /* 在交叉轴上居中对齐 */
 }
 
 /* 屏幕中心显示样式 */
@@ -280,7 +286,7 @@ body {
 /* 提示框样式 */
 .tooltip {
     position: fixed;
-    bottom: 20px; /* 距离底部20px */
+    bottom: 10px; /* 距离底部20px */
     right: 20px; /* 距离右边20px */
     background-color: rgba(0, 0, 0, 0.3);
     color: white;
@@ -293,8 +299,8 @@ body {
 }
 .tooltip-key {
     position: fixed;
-    bottom: 70px; /* 距离底部20px */
-    right: 20px; /* 距离右边20px */
+    bottom: 10px; /* 距离底部20px */
+    right: 150px; /* 距离右边20px */
     background-color: rgba(0, 0, 0, 0.3);
     color: white;
     padding: 10px;
@@ -444,6 +450,28 @@ body {
     width: 50px; /* 设定LOGO的宽度 */
     height: auto; /* 自适应高度 */
     margin-right: 20px; /* LOGO与文本之间的间距 */
+}
+
+.map {
+    position: absolute; /* 绝对定位 */
+    top: 82%; /* 自身高度的 50% 在父元素中心 */
+    left: 90%; /* 自身宽度的 50% 在父元素中心 */
+    transform: translate(-50%, -50%); /* 使其偏移一半的自身宽高，实现完美居中 */
+    z-index: 2; /* 设置 z-index，使其在中间层 */
+}
+.map img{
+
+    width: 300px; /* 设定LOGO的宽度 */
+    height: auto; /* 自适应高度 */
+    /* margin-right: 20px; LOGO与文本之间的间距 */
+}
+
+.map img.large {
+    width: 1200px; /* 大图的宽度 */
+}
+
+.map img.small {
+    width: 300px; /* 小图的宽度 */
 }
 
 /* 倒计时样式 */
