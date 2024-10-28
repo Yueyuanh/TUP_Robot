@@ -81,7 +81,15 @@ git clone https://github.com/TUP_Robot.git
 
 将热点密码改为12345678
 
-频段选择2.4Ghz
+``` windows
+//对应代码文件TUP_Robot/TUP_Robot/wificar_sta.ino
+
+const char *ssid = "TUP_Robot";    // 你的WiFi名称
+const char *password = "12345678"; // 你的WiFi密码
+
+```
+
+热点频段选择2.4Ghz
 
 ### 单片机
 
@@ -96,6 +104,10 @@ git clone https://github.com/TUP_Robot.git
 ### 客户端
 
 下载最新版release，TUP_Client客户端
+
+### 手机端
+
+热点打开后，手机连接热点，打开浏览器输入http://192.168.4.1/，即可访问小车控制页面
 
 ## 注意
 
