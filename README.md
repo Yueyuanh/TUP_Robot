@@ -51,6 +51,10 @@ TUP_Robot/
 
 ![demo car](doc/main.png)
 
+视频链接画面
+
+![demo car](doc/main-2.png)
+
 ### 设置界面
 
 按P键进入设置界面
