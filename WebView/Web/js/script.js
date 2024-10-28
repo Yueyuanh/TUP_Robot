@@ -217,6 +217,7 @@ document.getElementById("start-button").onclick = function() {
         updateHealthBar('red', 250);
         updateHealthBar('blue', 250);
         updateHealthBar('self', 250);
+        drawCircle(0); // 初始化
 
         ready_bgm.pause(); // 暂停准备音乐
         ready_bgm.currentTime = 0; // 重置开始音乐播放位置
@@ -391,22 +392,21 @@ document.addEventListener('mousedown', (event) => {
         case 0:
             button = '左键';
 
-            //当对话框不存在的时候才能点击
-            if(dialog.style.display === "none"){
+            // //当对话框不存在的时候才能点击
+            // if(dialog.style.display === "none"){
 
-                currentRatio += 0.1; // 每次点击增加 0.1
-                if (currentRatio > 1) { // 超过 1 后重置
-                    currentRatio = 0;
-                }
-                drawCircle(currentRatio); // 绘制当前比例的圆
+            //     currentRatio += 0.1; // 每次点击增加 0.1
+            //     if (currentRatio > 1) { // 超过 1 后重置
+            //         currentRatio = 0;
+            //     }
+            //     drawCircle(currentRatio); // 绘制当前比例的圆
 
-                //开枪决策
-                toggleLED('on');
-                //输出日志
-                console.log('on');
 
-  
-            }
+            //     //开枪决策
+            //     toggleLED('on');
+            //     //输出日志
+            //     console.log('on');
+            break;
 
             break;
         case 1:
@@ -480,6 +480,66 @@ function handleKeyDown(event) {
   };
 // <--------------------------键鼠监听--------------------------->
 
+// <--------------------------热量统计--------------------------->
+
+let increaseInterval; // 定义增加的定时器
+let decreaseInterval; // 定义减少的定时器
+let isMouseDown = false; // 记录鼠标按下状态
+
+
+document.addEventListener('mousedown', (event) => {
+    if (event.button === 0) { // 左键
+        if (dialog.style.display === "none") {
+            isMouseDown = true; // 标记鼠标为按下状态
+            
+            // 开始增加currentRatio的定时器
+            //clearInterval(increaseInterval); // 清除之前的定时器
+            //increaseInterval = setInterval(() => {
+                currentRatio=currentRatio+0.1; 
+                if (currentRatio > 1) { // 超过 1 后重置
+                    currentRatio = 1;
+                }
+                // currentRatio = Math.min(currentRatio + 0.1, 1); // 每100毫秒增加0.05，确保不超过1
+                drawCircle(currentRatio); // 更新圆形显示
+            //}, 100); // 每100毫秒增加一次
+            //console.log(increaseInterval);
+        }
+    }
+});
+
+decreaseInterval = setInterval(() => {
+   //currentRatio = Math.max(currentRatio - 0.05, 0); // 每100毫秒减少0.1，确保不低于0
+   if(currentRatio>0.02)
+    {
+        currentRatio=currentRatio-0.02;
+    }
+    else{   
+        currentRatio=0;
+        }
+    drawCircle(currentRatio); // 更新圆形显示
+        console.log(currentRatio);
+
+    }, 100); // 每100毫秒减少一次
+
+
+// document.addEventListener('mouseup', () => {
+//     // 鼠标松开时，停止增加并开始减少
+//     clearInterval(increaseInterval); // 清除增加定时器
+
+//     decreaseInterval = setInterval(() => {
+//         currentRatio = Math.max(currentRatio - 0.05, 0); // 每100毫秒减少0.1，确保不低于0
+//         drawCircle(currentRatio); // 更新圆形显示
+
+//         if (currentRatio <= 0) { // 当currentRatio小于等于0时清除减少定时器
+//             clearInterval(decreaseInterval);
+//         }
+//     }, 500); // 每100毫秒减少一次
+//             console.log(decreaseInterval);
+
+// });
+
+
+// <--------------------------热量统计--------------------------->
 
 function toggleLED(x) {
     const selectedSSID = dropdown.value; // 获取选中的 SSID};
