@@ -93,7 +93,7 @@ git clone https://github.com/TUP_Robot.git
 
 ### 客户端
 
-直接打开WebView/dist/TUP_client.exe即可开箱体验
+下载最新版release，TUP_Client客户端
 
 ## 注意
 
