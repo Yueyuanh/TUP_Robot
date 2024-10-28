@@ -81,6 +81,8 @@ git clone https://github.com/TUP_Robot.git
 
 将热点密码改为12345678
 
+频段选择2.4Ghz
+
 ### 单片机
 
 烧录TUP_Robot/wificar_sta.ino
