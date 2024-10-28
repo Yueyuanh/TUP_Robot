@@ -1,0 +1,4 @@
+pywebview
+pywifi
+asyncio
+websockets

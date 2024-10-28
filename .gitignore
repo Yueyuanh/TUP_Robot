@@ -1,0 +1,4 @@
+# 忽略dist
+dist/
+# 忽略build
+build/

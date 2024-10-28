@@ -53,6 +53,8 @@ TUP_Robot/
 
 ### 设置界面
 
+按P键进入设置界面
+
 ![demo car](doc/dialog.png)
 
 ### 按键交互
@@ -87,7 +89,7 @@ git clone https://github.com/TUP_Robot.git
 
 ### 客户端
 
-直接打开
+直接打开WebView/dist/TUP_client.exe即可开箱体验
 
 ## 注意
 
