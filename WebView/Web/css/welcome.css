@@ -1,0 +1,70 @@
+
+/* 欢迎界面的样式 */
+.welcome-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    background-image: url('../images/welcome.png');
+    background-size: cover;  /* 使背景图片覆盖整个区域 */
+    background-position: center; /* 背景图片居中 */
+    /* background-color: rgba(0, 0, 0, 0.8); */
+    color: white;
+    font-size: 50px;
+}
+
+.welcome-screen h1 {
+    font-size: 50px;
+    opacity: 0; /* 初始完全透明 */
+    animation: fadeIn 2s forwards; /* 应用动画 */
+}
+
+.welcome-screen button {
+    margin-top: 300px;
+    padding: 10px 20px;
+    font-size: 20px;
+    cursor: pointer;
+    background-color: #1a81e2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    opacity: 0; /* 初始完全透明 */
+    animation: fadeIn 2s forwards 1s; /* 延迟1秒后展示 */
+}
+
+ /* 定义动画 */
+ @keyframes fadeIn {
+    to {
+        opacity: 1; /* 动画结束时完全不透明 */
+    }
+}
+
+
+
+/* 开始视频画面 */
+.start-screen {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    color: white;
+    font-size: 50px;
+}
+
+video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -1;
+    transform: translate(-50%, -50%);
+}
+
+
