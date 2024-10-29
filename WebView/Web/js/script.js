@@ -1,12 +1,13 @@
 
 // <--------------------------处理欢迎界面的显示逻辑--------------------------->
 
-document.getElementById("welcome-screen").style.display = "none"; // 隐藏欢迎界面
-document.getElementById("main-screen").style.display = "block"; // 显示主界面
+// document.getElementById("welcome-screen").style.display = "none"; // 隐藏欢迎界面
+// document.getElementById("main-screen").style.display = "block"; // 显示主界面
 
 const welcome_bgm = document.getElementById("welcome-audio");
 const ready_bgm = document.getElementById("ready-audio");
 const start_bgm = document.getElementById("start-audio");
+const start_video = document.getElementById("start-video");
 
 
 // 点击
@@ -23,8 +24,21 @@ document.getElementById("start-game").onclick = function() {
         welcome_bgm.pause(); // 如果正在播放，则暂停
     }
     document.getElementById("welcome-screen").style.display = "none"; // 隐藏欢迎界面
-    document.getElementById("main-screen").style.display = "block"; // 显示主界面
-    ready_bgm.play(); // 只有在欢迎界面时才播放音乐
+
+    document.getElementById("start-screen").style.display = "block"; 
+    start_video.play(); // 播放视频
+    //取消视频静音
+    start_video.muted = false;
+    
+    //start-screen显示10秒后关闭
+    setTimeout(function(){
+        document.getElementById("start-screen").style.display = "none"; 
+        document.getElementById("main-screen").style.display = "block"; // 显示主界面
+        ready_bgm.play(); // 只有在欢迎界面时才播放音乐
+
+    },10000);
+
+ 
 
 };
 // <--------------------------处理欢迎界面的显示逻辑--------------------------->
@@ -517,26 +531,9 @@ decreaseInterval = setInterval(() => {
         currentRatio=0;
         }
     drawCircle(currentRatio); // 更新圆形显示
-        console.log(currentRatio);
 
     }, 100); // 每100毫秒减少一次
 
-
-// document.addEventListener('mouseup', () => {
-//     // 鼠标松开时，停止增加并开始减少
-//     clearInterval(increaseInterval); // 清除增加定时器
-
-//     decreaseInterval = setInterval(() => {
-//         currentRatio = Math.max(currentRatio - 0.05, 0); // 每100毫秒减少0.1，确保不低于0
-//         drawCircle(currentRatio); // 更新圆形显示
-
-//         if (currentRatio <= 0) { // 当currentRatio小于等于0时清除减少定时器
-//             clearInterval(decreaseInterval);
-//         }
-//     }, 500); // 每100毫秒减少一次
-//             console.log(decreaseInterval);
-
-// });
 
 
 // <--------------------------热量统计--------------------------->
