@@ -2,7 +2,7 @@
 
 ESP32视频小车
 
-![demo car](/doc/readme.png)
+![](https://cdn.jsdelivr.net/gh/yueyuanhaoo/BlogImage@main/readme.png))
 
 ## 硬件设计
 
